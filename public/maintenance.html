@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Mode</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family: Arial, sans-serif;
+            height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color:#fff;
+            text-align:center;
+            padding:20px;
+        }
+
+        .maintenance-box{
+            max-width:600px;
+        }
+
+        h1{
+            font-size:60px;
+            margin-bottom:20px;
+            color:#22c55e;
+        }
+
+        p{
+            font-size:18px;
+            line-height:1.7;
+            color:#cbd5e1;
+        }
+
+        .loader{
+            margin:40px auto 0;
+            width:60px;
+            height:60px;
+            border:6px solid rgba(255,255,255,0.2);
+            border-top-color:#22c55e;
+            border-radius:50%;
+            animation:spin 1s linear infinite;
+        }
+
+        @keyframes spin{
+            to{
+                transform:rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="maintenance-box">
+        <h1>We'll Be Back Soon!</h1>
+
+        <p>
+            Our website is currently undergoing scheduled maintenance.
+            We appreciate your patience and will be back shortly.
+        </p>
+
+        <div class="loader"></div>
+    </div>
+
+</body>
+</html>

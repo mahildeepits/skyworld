@@ -1,0 +1,1 @@
+<a href="javascript:void(0)" class="btn btn-sm btn-warning" onclick="commanModel(`{{route('news.events.create',['id' => encrypt($model->id)])}}`,'Edit News/Event')">Edit</a>

@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.nexobizz.twa",
+        "sha256_cert_fingerprints": ["15:18:94:41:DF:3E:72:86:42:2C:9B:32:AE:2E:24:B7:CC:5B:52:AD:A3:24:0D:68:B8:A5:05:B2:C0:C4:35:B4"]
+      }
+    }]

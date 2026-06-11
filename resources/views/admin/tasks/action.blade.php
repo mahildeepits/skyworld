@@ -1,0 +1,2 @@
+<a href="javascript:void(0)" class="btn btn-sm btn-warning" onclick="commanModel(`{{route('tasks.edit',encrypt($model->id))}}`,'Edit Task')">Edit</a>
+<a href="javascript:void(0)" class="btn btn-sm btn-danger" onclick="ajaxOnClick(`{{route('tasks.destroy',encrypt($model->id))}}`,'DELETE',{{json_encode(['_token' => csrf_token()])}})">Delete</a>

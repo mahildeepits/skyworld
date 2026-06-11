@@ -1,0 +1,2 @@
+<a href="javascript:void(0)" class="btn btn-sm btn-warning" onclick="commanModel(`{{route('agentcategories.edit',encrypt($model->id))}}`,'Edit Level', 'modal-md-custom')">Edit</a>
+<a href="javascript:void(0)" class="btn btn-sm btn-danger" onclick="ajaxOnClick(`{{route('agentcategories.destroy',encrypt($model->id))}}`,'DELETE',`{{json_encode(['_token' => csrf_token()])}}`)">Delete</a>
