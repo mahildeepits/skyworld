@@ -80,7 +80,8 @@ Route::get('fix/userenc', function () {
 
 //Admin Route
 Route::get('/', function () {
-    return view('frontendsite');
+    return redirect()->route('login');
+    // return view('frontendsite');
 });
 Route::group(['prefix' => 'admin'], function () {
     Route::get('login', [AuthControllerAlias::class, 'loginForm'])->name('admin.login');
