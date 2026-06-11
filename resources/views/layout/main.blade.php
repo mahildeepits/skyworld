@@ -45,8 +45,8 @@
       /* ════ NAVBAR ════════════════════════════════════════════ */
       .default-layout-navbar {
         height: var(--nav-h) !important;
-        background: var(--grad-dark) !important;
-        box-shadow: 0 3px 22px rgba(21,101,192,0.45) !important;
+        background: white !important;
+        /* box-shadow: 0 3px 22px rgba(21,101,192,0.45) !important; */
         border-bottom: 1px solid rgba(232,78,15,0.2) !important;
       }
 
@@ -54,7 +54,7 @@
       .default-layout-navbar .navbar-brand-wrapper {
         display: none !important;           /* hidden on desktop */
         height: var(--nav-h) !important;
-        background: rgba(0,0,0,0.25) !important;
+        background: white !important;
         border-right: 1px solid rgba(255,255,255,0.07) !important;
         width: 100% !important;
       }
@@ -391,6 +391,11 @@
         .content-wrapper { padding: 0.9rem 0.75rem !important; }
         .card-body { padding: 0.9rem !important; }
         .card { border-radius: 12px !important; }
+      }
+      button, input[type=submit]{
+        background-color: #04c !important;
+        color: white !important;
+        border-color: #04c;
       }
     </style>
 

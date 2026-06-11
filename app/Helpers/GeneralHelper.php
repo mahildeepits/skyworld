@@ -174,7 +174,9 @@ if(!function_exists('getSponsoredChilds')){
     function getSponsoredChilds($user_ids){
         $users = collect([]);
         if(count($user_ids) > 0){
-            $users = \App\Models\User::whereIn('sponsor_id',$user_ids)->get();
+            $users = \App\Models\User::with(['latestUserAgentCategory.agentCategory', 'unifiedTransactions'])
+                ->whereIn('sponsor_id',$user_ids)
+                ->get();
         }
         return $users;
     }

@@ -80,9 +80,6 @@ class WalletTransactionController extends Controller
                 if ($request->otp == null) {
                     return response()->json(['errors' => ['otp' => ['OTP is required']]], 422);
                 }
-                if ($request->google_2fa == null) {
-                    return response()->json(['errors' => ['google_2fa' => ['Google Authenticator Code is required']]], 422);
-                }
             }
 
             $user = authUser();
@@ -99,15 +96,10 @@ class WalletTransactionController extends Controller
                 return response()->json(['errors' => ['to_user' => ['Receiver Member ID not found.']]], 422);
             }
 
-            // 3. Verify Google 2FA
-            if (!$skip_otp) {
-                if (!$user->google2fa_secret) {
-                    return response()->json(['errors' => ['google_2fa' => ['Please set up Google Authenticator first in your profile.']]], 422);
-                }
-                $valid = \PragmaRX\Google2FALaravel\Facade::verifyKey($user->google2fa_secret, $request->google_2fa);
-                if (!$valid) {
-                    return response()->json(['errors' => ['google_2fa' => ['Invalid Google Authenticator code']]], 422);
-                }
+            // Downline Check: receiver must have sender's id in their parent_string
+            $parents = explode(',', $transferedUser->parent_string ?? '');
+            if (!in_array($user->id, $parents)) {
+                return response()->json(['errors' => ['to_user' => ['You can only transfer funds to users in your downline.']]], 422);
             }
 
             // 4. Verify Active Level Reserve & Transferable Balance
@@ -222,19 +214,7 @@ class WalletTransactionController extends Controller
             abort(403, 'User Not Found');
         }
 
-        // Google 2FA Logic
-        if (!$user->google2fa_secret) {
-            $user->google2fa_secret = \PragmaRX\Google2FALaravel\Facade::generateSecretKey();
-            $user->google2fa_setup_at = now();
-            $user->save();
-        }
 
-        $qrCodeUrl = \PragmaRX\Google2FALaravel\Facade::getQRCodeUrl(
-            'HAHM',
-            $user->email,
-            $user->google2fa_secret
-        );
-        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(250)->generate($qrCodeUrl);
 
         $activeCategory = $user->agentCategory();
         $reserveAmount = $activeCategory ? $activeCategory->unlock_balance : 0;
@@ -253,9 +233,6 @@ class WalletTransactionController extends Controller
                 if ($request->otp == null) {
                     return response()->json(['errors' => ['otp' => ['OTP is required']]], 422);
                 }
-                if ($request->google_2fa == null) {
-                    return response()->json(['errors' => ['google_2fa' => ['Google Authenticator Code is required']]], 422);
-                }
             }
 
             // 1. Prevent self-transfer
@@ -270,12 +247,10 @@ class WalletTransactionController extends Controller
                 return response()->json(['errors' => ['to_user' => ['Receiver Member ID not found.']]], 422);
             }
 
-            // 3. Verify Google 2FA
-            if (!$skip_otp) {
-                $valid = \PragmaRX\Google2FALaravel\Facade::verifyKey($user->google2fa_secret, $request->google_2fa);
-                if (!$valid) {
-                    return response()->json(['errors' => ['google_2fa' => ['Invalid Google Authenticator code']]], 422);
-                }
+            // Downline Check: receiver must have sender's id in their parent_string
+            $parents = explode(',', $transferedUser->parent_string ?? '');
+            if (!in_array($user->id, $parents)) {
+                return response()->json(['errors' => ['to_user' => ['You can only transfer funds to users in your downline.']]], 422);
             }
 
             // 4. Verify Transferable Balance
@@ -456,6 +431,6 @@ class WalletTransactionController extends Controller
             }
         }
 
-        return view('wallet.transfer', compact('user', 'transferable', 'reserveAmount', 'totalBalance', 'activeCategory', 'qrCode', 'qrCodeUrl'));
+        return view('wallet.transfer', compact('user', 'transferable', 'reserveAmount', 'totalBalance', 'activeCategory'));
     }
 }

@@ -69,6 +69,30 @@
                                         <p class="h6 font-weight-bold">{{ $authMember->created_at->toDayDateTimeString() }}</p>
                                     </div>
                                 </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="info-group">
+                                        <label class="text-muted small text-uppercase font-weight-bold mb-1">Address</label>
+                                        <p class="h6 font-weight-bold">{{ $authMember->profile_rel?->address ?? 'N/A' }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="info-group">
+                                        <label class="text-muted small text-uppercase font-weight-bold mb-1">City</label>
+                                        <p class="h6 font-weight-bold">{{ $authMember->profile_rel?->city ?? 'N/A' }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="info-group">
+                                        <label class="text-muted small text-uppercase font-weight-bold mb-1">State</label>
+                                        <p class="h6 font-weight-bold">{{ $authMember->profile_rel?->state ?? 'N/A' }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="info-group">
+                                        <label class="text-muted small text-uppercase font-weight-bold mb-1">Country</label>
+                                        <p class="h6 font-weight-bold text-success">{{ $authMember->profile_rel?->country ?? 'N/A' }}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -13,6 +13,9 @@ use App\Models\UserAgentCategory;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Helpers\RewardHelper;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AccountApprovedEmail;
+use App\Mail\AccountRejectedEmail;
 
 class RegistrationRequestController extends Controller
 {
@@ -95,6 +98,13 @@ class RegistrationRequestController extends Controller
             $req->save();
 
             DB::commit();
+
+            try {
+                Mail::to($userModel->email)->send(new AccountApprovedEmail($userModel));
+            } catch (\Exception $e) {
+                // Ignore mail failures
+            }
+
             return back()->with('success', 'Registration approved successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -109,9 +119,32 @@ class RegistrationRequestController extends Controller
             return back()->withErrors(['error' => 'Request is already processed.']);
         }
 
-        $req->status = 'rejected';
-        $req->save();
+        DB::beginTransaction();
+        try {
+            $userModel = $req->user;
+            if ($userModel) {
+                $userModel->is_blocked = 1;
+                $userModel->user_icon = 'blocked.png';
+                $userModel->save();
+            }
 
-        return back()->with('success', 'Registration rejected successfully.');
+            $req->status = 'rejected';
+            $req->save();
+
+            DB::commit();
+
+            try {
+                if ($userModel) {
+                    Mail::to($userModel->email)->send(new AccountRejectedEmail($userModel));
+                }
+            } catch (\Exception $e) {
+                // Ignore mail failures
+            }
+
+            return back()->with('success', 'Registration rejected successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Failed to reject registration: ' . $e->getMessage()]);
+        }
     }
 }

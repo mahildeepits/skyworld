@@ -66,16 +66,7 @@ $userWallets = $user->wallet_addresses ?? [];
                                     </div>
                                 </div>
 
-                                <div class="col-12">
-                                    <div class="form-group mb-3">
-                                        <label>Google Authenticator Code <span class="text-danger">*</span></label>
-                                        <input type="text" name="google_2fa" class="form-control" placeholder="6-digit code">
-                                        <small class="text-muted">
-                                            <a href="javascript:void(0)" class="open-qr-modal">Setup/View QR Code</a>
-                                        </small>
-                                        <div class="invalid-feedback"></div>
-                                    </div>
-                                </div>
+
                                 <div class="col-12">
                                     <input type="submit" value="Add/Update Wallet Address" class="btn btn-main w-100 text-white">
                                 </div>
@@ -96,68 +87,10 @@ $userWallets = $user->wallet_addresses ?? [];
     </div>
 </div>
 
-<!-- Google 2FA Setup Modal -->
-<div class="modal fade" id="google2fa-modal" tabindex="-1" role="dialog" aria-labelledby="google2fa-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="google2fa-modal-label">Google Authenticator Setup</h5>
-                <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body text-center">
-                <p>Scan this QR code with your Google Authenticator App</p>
-                <div style="max-width:220px; margin:20px auto; background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                    @isset($qrCode)
-                        {!! $qrCode !!}
-                    @else
-                        <div class="alert alert-danger py-1 small">Unable to generate QR</div>
-                    @endisset
-                </div>
-                <p class="text-muted small">Secret Key: {{ authUser()->google2fa_secret }}</p>
-                <div class="alert alert-info py-2 small" style="border-radius: 8px;">
-                    Make sure to save your secret key in a safe place.
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 @endsection
 @section('scripts')
 <script>
     let walletAddress = @json($userWallets) ?? [];
-
-    // Native Bootstrap 5 Modal Trigger
-    $(document).on('click', '.open-qr-modal', function(e) {
-        e.preventDefault();
-        try {
-            var myModalEl = document.getElementById('google2fa-modal');
-            var modal = bootstrap.Modal.getOrCreateInstance(myModalEl);
-            modal.show();
-        } catch (err) {
-            console.error('BS5 Modal error:', err);
-            // jquery fallback if bootstrap is not available as global
-            if (typeof $.fn.modal !== 'undefined') {
-                $('#google2fa-modal').modal('show');
-            } else {
-                $('#google2fa-modal').addClass('show').css('display', 'block');
-                $('body').append('<div class="modal-backdrop fade show"></div>');
-            }
-        }
-    });
-
-    $(document).on('click', '[data-bs-dismiss="modal"]', function() {
-        var myModalEl = document.getElementById('google2fa-modal');
-        var modal = bootstrap.Modal.getInstance(myModalEl);
-        if (modal) {
-            modal.hide();
-        } else {
-            $('#google2fa-modal').removeClass('show').css('display', 'none');
-            $('.modal-backdrop').remove();
-        }
-    });
 
     // Handle amount changes
     $(document).on('keyup','#amount',function(){

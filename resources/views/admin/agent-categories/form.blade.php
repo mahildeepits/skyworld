@@ -106,7 +106,7 @@ $method = 'POST';
         </div>
 
         <div class="col-md-12">
-            <div class="section-title">Team Profit ( % )</div>
+            <div class="section-title">IB Income ( % )</div>
         </div>
 
         <div class="col-md-4">

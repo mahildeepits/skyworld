@@ -295,7 +295,7 @@
                     <div class="benefit-item">
                         <div class="benefit-icon"><i class="icon-people"></i></div>
                         <div class="benefit-text">
-                            <span>Team A Profit</span>
+                            <span>Team A IB Income</span>
                             <strong>{{ $category->team_a_profit }}%</strong>
                         </div>
                     </div>
@@ -305,7 +305,7 @@
                     <div class="benefit-item">
                         <div class="benefit-icon"><i class="icon-people"></i></div>
                         <div class="benefit-text">
-                            <span>Team B Profit</span>
+                            <span>Team B IB Income</span>
                             <strong>{{ $category->team_b_profit }}%</strong>
                         </div>
                     </div>
@@ -315,7 +315,7 @@
                     <div class="benefit-item">
                         <div class="benefit-icon"><i class="icon-people"></i></div>
                         <div class="benefit-text">
-                            <span>Team C Profit</span>
+                            <span>Team C IB Income</span>
                             <strong>{{ $category->team_c_profit }}%</strong>
                         </div>
                     </div>

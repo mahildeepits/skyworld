@@ -27,7 +27,8 @@
                                                 <th>#</th>
                                                 <th>Name</th>
                                                 <th>UserID</th>
-                                                <th>Is Paid</th>
+                                                <th>Package</th>
+                                                <th>Deposit Amount</th>
                                                 {{-- <th>Position</th> --}}
                                             </tr>
                                         </thead>
@@ -38,11 +39,14 @@
                                                     <td>{{ $user->name }}</td>
                                                     <td>{{ $user->member_id }}</td>
                                                     <td>
-                                                        @if ($user->is_paid)
-                                                            <span class="bg-success text-white px-3 py-1 rounded">Yes</span>
-                                                        @else
-                                                            <span class="bg-danger text-white px-3 py-1 rounded">No</span>
-                                                        @endif
+                                                         @if ($user->is_paid)
+                                                             <span class="bg-success text-white px-3 py-1 rounded">{{ $user->agentCategory()?->name ?? 'Paid' }}</span>
+                                                         @else
+                                                             <span class="bg-danger text-white px-3 py-1 rounded">No Package</span>
+                                                         @endif
+                                                    </td>
+                                                    <td>
+                                                         <strong>${{ number_format($user->getTotalDeposits(), 2) }}</strong>
                                                     </td>
                                                     {{-- <td>{{ ucfirst($user->parent_leg) }}</td> --}}
                                                 </tr>

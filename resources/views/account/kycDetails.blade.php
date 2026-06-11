@@ -69,7 +69,7 @@
                                     @if($isAnyApproved)
                                         <div class="alert alert-success py-2">Your KYC is already approved. You cannot edit it anymore.</div>
                                     @else
-                                        {!! Form::submit('Save KYC Details', ['class' => 'btn btn-info text-white px-4 py-2', 'style' => 'background-color: #1dd3d5; border-color: #1dd3d5;']) !!}
+                                        {!! Form::submit('Save KYC Details', ['class' => 'btn btn-info text-white px-4 py-2', 'style' => 'background-color: #04c; border-color: #04c;']) !!}
                                     @endif
                                 </div>
                             </div>

@@ -19,16 +19,18 @@ class RegisterEmail extends Mailable
     private $message;
     private $dynamic_title;
     private $dynamic_value;
+    private $is_registration;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($userModel, $coupon_code = null)
+    public function __construct($userModel, $coupon_code = null, $is_registration = false)
     {
         $this->userModel = $userModel;
         $this->coupon_code = $coupon_code;  // Pass coupon code to the template
+        $this->is_registration = $is_registration;
         $this->message = 'Welcome to the ' . env('APP_NAME') . ', you are warmly welcomed into our family.';
         $this->dynamic_title = 'Password';
         $this->dynamic_value = Crypt::decrypt($this->userModel->enc_password);
@@ -56,6 +58,7 @@ class RegisterEmail extends Mailable
                 'dynamic_title' => $this->dynamic_title,
                 'dynamic_value' => $this->dynamic_value,
                 'coupon_code' => $this->coupon_code, // Ensure this is available in the view
+                'is_registration' => $this->is_registration,
             ]);
     }
 }

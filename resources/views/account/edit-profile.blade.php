@@ -50,9 +50,9 @@
                         </div>
                     </div>
 
-                    <!-- <div class="row mb-3">
+                    <div class="row">
                         {!! Form::label('country','Country*',['class'=>'col-md-2 col-form-label font-16']) !!}
-                        <div class="col-md-6 form-group">
+                        <div class="col-md-6 form-group mb-1">
                             {!! Form::text('country',auth()->guard('member')->user()->profile_rel?->country,['class'=>'form-control','placeholder'=>'Enter country']) !!}
                             @error('country')
                                 <span class="help-block text-danger">
@@ -60,7 +60,7 @@
                                 </span>
                             @enderror
                         </div>
-                    </div> -->
+                    </div>
                     <div class="row">
                         {!! Form::label('state','State*',['class'=>'col-md-2 col-form-label font-16']) !!}
                         <div class="col-md-6 form-group mb-1">

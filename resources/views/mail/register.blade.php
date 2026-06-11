@@ -14,6 +14,10 @@
     </tr>
 </table>
 
+@if(isset($is_registration) && $is_registration)
+<p>your account will be activated soon after reviewing your details please upload KYC and wallet address for quick action.</p>
+@endif
+
 @if ($coupon_code !== null)
     <p align="center">Please login to your account</p>
     @component('mail::button', ['url' => url(env('APP_URL') . '/member/login')])

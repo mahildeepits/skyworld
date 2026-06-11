@@ -69,14 +69,7 @@ $user = authUser();
                                     <div class="invalid-feedback"></div>
                                 </div>
                                 
-                                <div class="form-group my-2">
-                                    <label>Google Authenticator Code <span class="text-danger">*</span></label>
-                                    <input type="text" name="google_2fa" class="form-control mt-1" placeholder="6-digit code" required>
-                                    <small class="text-muted">
-                                        <a href="javascript:void(0)" class="open-qr-modal">Setup/View QR Code</a>
-                                    </small>
-                                    <div class="invalid-feedback"></div>
-                                </div>
+
                             </div>
 
                             @if($transferable < 1)
@@ -107,41 +100,13 @@ $user = authUser();
     </div>
 </div>
 
-<!-- Google 2FA Setup Modal -->
-<div class="modal fade" id="google2fa-modal" tabindex="-1" role="dialog" aria-labelledby="google2fa-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="google2fa-modal-label">Google Authenticator Setup</h5>
-                <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body text-center">
-                <p>Scan this QR code with your Google Authenticator App</p>
-                <div style="max-width:270px; margin:20px auto; background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                    @if($qrCode)
-                        {!! $qrCode !!}
-                    @else
-                        <div class="alert alert-danger py-1 small">Unable to generate QR</div>
-                    @endif
-                </div>
-                <p class="text-muted small">Secret Key: {{ authUser()->google2fa_secret }}</p>
-                <div class="alert alert-info py-2 small" style="border-radius: 8px;">
-                    Make sure to save your secret key in a safe place.
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 @endsection
 
 @section('scripts')
 <script>
     $(document).ready(function(){
-        // Move modal to body to prevent stacking context issues where the backdrop overlaps the modal
-        $('#google2fa-modal').appendTo('body');
 
         // Dynamic fee calculator
         $(document).on('keyup input', '#amount', function() {
@@ -204,33 +169,6 @@ $user = authUser();
         });
     });
 
-    // Native Bootstrap 5 Modal Trigger
-    $(document).on('click', '.open-qr-modal', function(e) {
-        e.preventDefault();
-        try {
-            var myModalEl = document.getElementById('google2fa-modal');
-            var modal = bootstrap.Modal.getOrCreateInstance(myModalEl);
-            modal.show();
-        } catch (err) {
-            console.error('BS5 Modal error:', err);
-            if (typeof $.fn.modal !== 'undefined') {
-                $('#google2fa-modal').modal('show');
-            } else {
-                $('#google2fa-modal').addClass('show').css('display', 'block');
-                $('body').append('<div class="modal-backdrop fade show"></div>');
-            }
-        }
-    });
 
-    $(document).on('click', '[data-bs-dismiss="modal"]', function() {
-        var myModalEl = document.getElementById('google2fa-modal');
-        var modal = bootstrap.Modal.getInstance(myModalEl);
-        if (modal) {
-            modal.hide();
-        } else {
-            $('#google2fa-modal').removeClass('show').css('display', 'none');
-            $('.modal-backdrop').remove();
-        }
-    });
 </script>
 @endsection

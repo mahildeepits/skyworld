@@ -77,7 +77,9 @@ class BinaryTreeController extends Controller
 
 
     public function myDirects(){
-        $directs = User::whereSponsorId(\Auth::guard('member')->user()->member_id)->get();
+        $directs = User::with(['latestUserAgentCategory.agentCategory', 'unifiedTransactions'])
+            ->whereSponsorId(\Auth::guard('member')->user()->member_id)
+            ->get();
         return view('binary-tree.directs',compact('directs'));
     }
 

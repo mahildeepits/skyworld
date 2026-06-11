@@ -71,7 +71,7 @@
   }
   .db-stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(3,75,179,0.12) !important; }
   .db-stat-label { font-size: 0.77rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 8px; }
-  .db-stat-value { font-size: 1.7rem; font-weight: 700; color: #0f172a; margin: 0; line-height: 1.1; }
+  .db-stat-value { font-size: 1.7rem; font-weight: 700; color: #0f172a; margin: 0; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .db-stat-sub { font-size: 0.75rem; color: #94a3b8; margin-top: 6px; }
   .db-stat-icon {
     width: 42px; height: 42px;
@@ -431,7 +431,7 @@
           @endif
         </div>
         <p class="db-stat-label" style="font-size: 0.65rem;">My Level</p>
-        <h3 class="db-stat-value" style="font-size: 1.2rem;">{{ $currentLevel->name ?? 'N/A' }}</h3>
+        <h3 class="db-stat-value" style="font-size: 1.2rem;" title="{{ $currentLevel->name ?? 'N/A' }}">{{ $currentLevel->name ?? 'N/A' }}</h3>
       </div>
     </a>
   </div>
@@ -510,7 +510,7 @@
   </div> -->
 
   {{-- Withdrawal --}}
-  <!-- <div class="col-md-3 col-6">
+  <div class="col-md-3 col-6">
     <a href="{{ route('wallet.withdrawl') }}" class="text-decoration-none">
       <div class="db-stat-card">
         <div class="db-stat-icon mb-2" style="background: rgba(244,63,94,0.1); color: #f43f5e; width: 35px; height: 35px;">
@@ -520,7 +520,7 @@
         <h3 class="db-stat-value" style="font-size: 1.2rem;">Cash Out</h3>
       </div>
     </a>
-  </div> -->
+  </div>
 
   {{-- Tree View --}}
   <div class="col-md-3 col-6">
@@ -536,7 +536,7 @@
   </div>
 
   {{-- My ID Card --}}
-  <div class="col-md-3 col-6">
+  <!-- <div class="col-md-3 col-6">
     <a href="{{ route('id-card') }}" class="text-decoration-none">
       <div class="db-stat-card">
         <div class="db-stat-icon mb-2" style="background: rgba(99, 102, 241, 0.1); color: #6366f1; width: 35px; height: 35px;">
@@ -546,7 +546,7 @@
         <h3 class="db-stat-value" style="font-size: 1.2rem;">My Identity</h3>
       </div>
     </a>
-  </div>
+  </div> -->
 
 
 </div>
@@ -569,7 +569,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(['trade' => 'Trade Income', 'team' => 'Team Profit'] as $key => $label)
+                    @foreach(['trade' => 'Trade Income', 'team' => 'IB Income'] as $key => $label)
                     <tr style="border-bottom: 1px solid #f8fafc;">
                         <td class="ps-0 py-3">
                             <span class="fw-600 text-dark">{{ $label }}</span>

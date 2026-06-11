@@ -4,7 +4,7 @@
             <div class="p-2 bg-light rounded border">
                 <p class="mb-1"><strong>Name:</strong> {{ $payout->user->name ?? 'N/A' }} ({{ $payout->user->member_id ?? '' }})</p>
                 <p class="mb-1"><strong>Mobile:</strong> {{ $payout->user->mobile ?? 'N/A' }}</p>
-                <p class="mb-0"><strong>Bank Details:</strong></p>
+                <p class="mb-0"><strong>Wallet Address (BEP-20):</strong></p>
                 <p class="font-weight-bold text-break mb-0" style="color: #00e2fb; white-space: pre-line; word-break: break-word; font-size: 1.1rem;">{{ $payout->wallet_address }}</p>
             </div>
         </div>

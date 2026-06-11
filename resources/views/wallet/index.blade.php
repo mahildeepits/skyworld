@@ -4,7 +4,7 @@
 <style>
     /* ── Header & Summary ── */
     .wallet-header-card {
-        background: linear-gradient(135deg, #07122e 0%, #0c2260 55%, #034bb3 100%);
+        background: #04c;
         border-radius: 20px !important;
         padding: 30px !important;
         color: #fff;
@@ -165,6 +165,13 @@
                 elseif(str_contains($cat, 'withdraw')) { $icon='icon-wallet'; $iconClass='withdraw'; }
                 elseif(str_contains($cat, 'transfer')) { $icon='icon-shuffle'; $iconClass='transfer'; }
                 elseif(str_contains($cat, 'income') || str_contains($cat, 'commission')) { $icon='icon-arrow-down-circle'; $iconClass='income'; }
+
+                // Map Team Profit / Team Income to IB Income for display
+                $displayCategory = ucwords(str_replace('_', ' ', $tx->category));
+                $displayCategory = str_ireplace(['Team Profit', 'Team Income'], 'IB Income', $displayCategory);
+                
+                $displayDescription = $tx->description;
+                $displayDescription = str_ireplace(['Team Profit', 'Team Income'], 'IB Income', $displayDescription);
             @endphp
             
             <div class="tx-card" data-tx-id="{{ $tx->id }}">
@@ -173,7 +180,7 @@
                         <i class="{{ $icon }}"></i>
                     </div>
                     <div class="tx-info">
-                        <div class="tx-category">{{ ucwords(str_replace('_', ' ', $tx->category)) }}</div>
+                        <div class="tx-category">{{ $displayCategory }}</div>
                         <div class="tx-date text-uppercase">{{ $tx->created_at->format('d M Y • h:i A') }}</div>
                     </div>
                     <div class="tx-amount-side">
@@ -183,7 +190,7 @@
                 </div>
                 
                 <div class="tx-details">
-                    <div class="mb-1"><i class="icon-info me-1"></i> {{ $tx->description }}</div>
+                    <div class="mb-1"><i class="icon-info me-1"></i> {{ $displayDescription }}</div>
                     @if($tx->tx_hash)
                         <div class="small fw-bold mt-2 mb-1">TX HASH</div>
                         <div class="tx-hash-box">

@@ -16,7 +16,8 @@
                                     <th>#</th>
                                     <th>Name</th>
                                     <th>User ID</th>
-                                    <th>Is Paid ?</th>
+                                    <th>Package</th>
+                                    <th>Deposit Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -27,10 +28,13 @@
                                         <td>{{ $user->member_id }}</td>
                                         <td>
                                             @if ($user->is_paid)
-                                                <span class="bg-success text-white px-3 py-1 rounded">Yes</span>
+                                                <span class="bg-success text-white px-3 py-1 rounded">{{ $user->agentCategory()?->name ?? 'Paid' }}</span>
                                             @else
-                                                <span class="bg-danger text-white px-3 py-1 rounded">No</span>
+                                                <span class="bg-danger text-white px-3 py-1 rounded">No Package</span>
                                             @endif
+                                        </td>
+                                        <td>
+                                            <strong>${{ number_format($user->getTotalDeposits(), 2) }}</strong>
                                         </td>
                                     </tr>
                                 @endforeach

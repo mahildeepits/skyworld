@@ -34,7 +34,7 @@
     <li class="nav-item {{ Route::is('member.dashboard') ? 'active' : '' }}">
       <a class="nav-link" href="{{ route('member.dashboard') }}">
         <i class="icon-home menu-icon"></i>
-        <span class="menu-title">Member Home</span>
+        <span class="menu-title">Dashboard</span>
       </a>
     </li>
 
@@ -67,20 +67,21 @@
       </div>
     </li> -->
 
-    <li class="nav-item {{ Route::is(['account.profile','account.change-password','account.kyc-details','edit-bank-details','wallet.pin']) ? 'active' : '' }}">
+    <li class="nav-item {{ Route::is(['account.profile','account.change-password','account.kyc-details','edit.wallet.address','wallet.pin']) ? 'active' : '' }}">
       <a class="nav-link" data-bs-toggle="collapse" href="#my-information"
-         aria-expanded="{{ Route::is(['account.profile','account.change-password','account.kyc-details','edit-bank-details','wallet.pin']) ? 'true' : 'false' }}"
+         aria-expanded="{{ Route::is(['account.profile','account.change-password','account.kyc-details','edit.wallet.address','wallet.pin']) ? 'true' : 'false' }}"
          aria-controls="my-information">
         <i class="icon-user menu-icon"></i>
         <span class="menu-title">My Information</span>
         <i class="menu-arrow"></i>
       </a>
-      <div class="collapse {{ Route::is(['account.profile','account.change-password','account.kyc-details','edit-bank-details']) ? 'show' : '' }}" id="my-information">
+      <div class="collapse {{ Route::is(['account.profile','account.change-password','account.kyc-details','edit.wallet.address']) ? 'show' : '' }}" id="my-information">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"><a class="nav-link {{ Route::is('account.profile') ? 'active' : '' }}" href="{{ route('account.profile') }}">My Profile</a></li>
           <li class="nav-item"><a class="nav-link {{ Route::is('account.change-password') ? 'active' : '' }}" href="{{ route('account.change-password') }}">Change Password</a></li>
           <li class="nav-item"><a class="nav-link {{ Route::is('account.kyc-details') ? 'active' : '' }}" href="{{ route('account.kyc-details') }}">KYC Details</a></li>
-          <li class="nav-item"><a class="nav-link {{ Route::is('edit-bank-details') ? 'active' : '' }}" href="{{ route('edit-bank-details') }}">Bank Details</a></li>
+          <!-- <li class="nav-item"><a class="nav-link {{ Route::is('edit-bank-details') ? 'active' : '' }}" href="{{ route('edit-bank-details') }}">Bank Details</a></li> -->
+          <li class="nav-item"><a class="nav-link {{ Route::is('edit.wallet.address') ? 'active' : '' }}" href="{{ route('edit.wallet.address') }}">Wallet Address</a></li>
         </ul>
       </div>
     </li>
@@ -102,12 +103,12 @@
       </div>
     </li>
 
-    <li class="nav-item {{ Route::is('id-card') ? 'active' : '' }}">
+    <!-- <li class="nav-item {{ Route::is('id-card') ? 'active' : '' }}">
       <a class="nav-link" href="{{ route('id-card') }}">
         <i class="icon-badge menu-icon"></i>
         <span class="menu-title">ID Card</span>
       </a>
-    </li>
+    </li> -->
      <li class="nav-item  {{ Route::is('member.wallet') ? 'active' : '' }}">
       <a class="nav-link" href="{{ route('member.wallet') }}">
         <i class="icon-credit-card menu-icon"></i>
@@ -120,6 +121,14 @@
         <span class="menu-title">Withdrawal</span>
       </a>
     </li>
+    @if(!in_array(authUser()->member_id, ['Company','company']))
+    <li class="nav-item {{ Route::is('wallet.transfer') ? 'active' : '' }}">
+      <a class="nav-link" href="{{ route('wallet.transfer') }}">
+        <i class="icon-shuffle menu-icon"></i>
+        <span class="menu-title">Transfer</span>
+      </a>
+    </li>
+    @endif
 
     <!-- <li class="nav-item {{ Route::is('member.locking') ? 'active' : '' }}">
       <a class="nav-link" href="{{ route('member.locking') }}">

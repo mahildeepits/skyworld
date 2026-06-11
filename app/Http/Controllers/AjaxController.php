@@ -21,6 +21,13 @@ class AjaxController extends Controller
             $user = User::where(['member_id'=>$request->sponsor])->first();
             $res = ['sponsor'=> $user?->name ?? '','error_code'=>0];
             if($request->has('is_for') && $request->is_for == 'transfer_money'){
+                $sender = authUser('member');
+                if ($sender && $user) {
+                    $parents = explode(',', $user->parent_string ?? '');
+                    if (!in_array($sender->id, $parents)) {
+                        return ['status' => false, 'message' => 'Receiver is not in your downline'];
+                    }
+                }
                 $res = ['message' => ($user?->name ?? ''),'status' => true];
             }
             if($user == null){
@@ -31,7 +38,7 @@ class AjaxController extends Controller
                 }
             }else if($user->is_paid == 0){
                 if($request->has('is_for') && $request->is_for == 'transfer_money'){
-                    return ['status' => false,'message' => 'Sponsor is not paid'];
+                    return ['status' => false,'message' => 'Sponsor is not active'];
                 }else{
                     $res = ['error'=>'Sponsor not found/active','error_code'=> 403];
                 }

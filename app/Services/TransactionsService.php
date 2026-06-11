@@ -18,10 +18,8 @@ class TransactionsService{
             'wallet_address' => 'required',
             'type' => 'required',
             'otp' => 'required_unless:skip_otp,1',
-            'google_2fa' => 'required_unless:skip_otp,1',
         ], [
             'otp.required_unless' => 'OTP is required',
-            'google_2fa.required_unless' => 'Google Authenticator code is required',
         ]);
 
         if ($validator->fails()) {
@@ -36,12 +34,6 @@ class TransactionsService{
             $varifiedResponse = checkOtp($request->otp);
             if ($varifiedResponse['status'] == false) {
                 return response()->json(['errors' => ['otp' => [$varifiedResponse['message']]]], 422);
-            }
-
-            // 2. Verify Google 2FA
-            $valid = \PragmaRX\Google2FALaravel\Facade::verifyKey($user->google2fa_secret, $request->google_2fa);
-            if (!$valid) {
-                return response()->json(['errors' => ['google_2fa' => ['Invalid Google Authenticator code']]], 422);
             }
         }
 
@@ -114,12 +106,12 @@ class TransactionsService{
             return response()->json(['status' => false, 'message' => $otpResponse['message'], 'code' => 400]);
         }
 
-        // 2. Fetch Bank Details
-        $bankDetails = \App\Models\UserBankDetail::whereUserId($user->id)->first();
-        if (!$bankDetails || empty($bankDetails->account_number) || empty($bankDetails->ifsc_code)) {
-            return response()->json(['status' => false, 'message' => 'Bank Details are missing. Please add them first.', 'code' => 400]);
+        // 2. Fetch Wallet Address
+        $userWallets = $user->wallet_addresses ?? [];
+        if (empty($userWallets['BEP-20'])) {
+            return response()->json(['status' => false, 'message' => 'BEP-20 Wallet Address is missing. Please add it first.', 'code' => 400]);
         }
-        $formattedBankDetails = "A/C: {$bankDetails->account_number} | IFSC: {$bankDetails->ifsc_code} | Bank: {$bankDetails->bank_name} | Name: {$bankDetails->account_holder_name}";
+        $formattedBankDetails = $userWallets['BEP-20'];
 
         // 3. Check Balance with Trading Lock & $50 Lock
         $totalBalance = $user->walletIncomesByKey();

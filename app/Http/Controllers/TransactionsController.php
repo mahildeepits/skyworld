@@ -12,10 +12,10 @@ class TransactionsController extends Controller
         $transaction_fees_percentage = 0.06;
         $user = authUser();
 
-        // Restriction: Bank Details Must Be Set First
-        $bankDetails = \App\Models\UserBankDetail::whereUserId($user->id)->first();
-        if (!$bankDetails || empty($bankDetails->account_number) || empty($bankDetails->ifsc_code)) {
-            return redirect()->route('edit-bank-details')->with('error', 'Error|Please add your Bank Details first before making a withdrawal.');
+        // Restriction: Wallet Address Must Be Set First
+        $userWallets = $user->wallet_addresses ?? [];
+        if (empty($userWallets['BEP-20'])) {
+            return redirect()->route('edit.wallet.address')->with('error', 'Error|Please add your BEP-20 wallet address first before making a withdrawal.');
         }
 
         $totalBalance = $user->walletIncomesByKey();
@@ -42,7 +42,7 @@ class TransactionsController extends Controller
             $maxSingleLimit = ($activeCategory->unlock_balance == 50) ? 200 : $activeCategory->unlock_balance;
         }
 
-        return view('wallet.withdrawl',compact('transaction_fees_percentage', 'availableBalance', 'lockedTrading', 'maxSingleLimit', 'activeCategory', 'bankDetails'));
+        return view('wallet.withdrawl',compact('transaction_fees_percentage', 'availableBalance', 'lockedTrading', 'maxSingleLimit', 'activeCategory'));
     }
     // public function setWalletAddress(Request $request){
     //     $editable = true;
@@ -79,25 +79,9 @@ class TransactionsController extends Controller
         return view('wallet.set-pin');
     }
     public function editWalletAddress(Request $request){
-        $user = authUser();
-        
-        // Google 2FA Logic
-        if (!$user->google2fa_secret) {
-            $user->google2fa_secret = \PragmaRX\Google2FALaravel\Facade::generateSecretKey();
-            $user->google2fa_setup_at = now();
-            $user->save();
-        }
-
-        $qrCodeUrl = \PragmaRX\Google2FALaravel\Facade::getQRCodeUrl(
-            'HAHM',
-            $user->email,
-            $user->google2fa_secret
-        );
-        $qrCode = QrCode::size(250)->generate($qrCodeUrl);
-
         if($request->isMethod('post')){
             return (new TransactionsService)->editWalletAddress($request);
         }
-        return view('wallet.edit-wallet-address', compact('qrCode', 'qrCodeUrl'));
+        return view('wallet.edit-wallet-address');
     }
 }

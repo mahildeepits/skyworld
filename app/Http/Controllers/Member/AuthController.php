@@ -252,7 +252,7 @@ class AuthController extends Controller
     }
 
     private function sendEmail($email, $userModel,$coupon_code = null){
-        \Mail::to($email)->send(new RegisterEmail($userModel,$coupon_code));
+        \Mail::to($email)->send(new RegisterEmail($userModel,$coupon_code, true));
     }
 
     public function generatePayoutForSingleUser($singleUser, $adminCharges){
