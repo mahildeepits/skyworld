@@ -165,17 +165,17 @@
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <!-- Logo Section -->
             <a href="#" class="flex items-center gap-3 group">
-                <div class="relative w-10 h-10 flex items-center justify-center bg-gradient-to-tr from-blue-600 to-sky-400 rounded-xl shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+                <!-- <div class="relative w-10 h-10 flex items-center justify-center bg-gradient-to-tr from-blue-600 to-sky-400 rounded-xl shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300"> -->
                     <!-- If logo exists, render it. Fallback is styled icon. -->
-                    @if(file_exists(public_path('images/logo.png')))
-                        <img src="{{ asset('images/logo.png') }}" class="w-8 h-8 object-contain" alt="SkyWorld logo">
+                    @if(file_exists(public_path('images/54.png')))
+                        <img src="{{ asset('images/54.png') }}" class=" object-contain" width="200px" height="auto" alt="SkyWorld logo">
                     @else
                         <i class="fa-solid fa-chart-line-up text-white text-lg"></i>
                     @endif
-                </div>
-                <span class="text-2xl font-bold font-outfit tracking-tight text-slateDark group-hover:text-blue-600 transition-colors">
+                <!-- </div> -->
+                <!-- <span class="text-2xl font-bold font-outfit tracking-tight text-slateDark group-hover:text-blue-600 transition-colors">
                     Sky<span class="bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">World</span>
-                </span>
+                </span> -->
             </a>
 
             <!-- Desktop Links -->
@@ -280,7 +280,7 @@
                     <div class="absolute inset-0 bg-grid-pattern opacity-40 rounded-[36px]"></div>
                     
                     <!-- Floating Widget 1: Live Trades Ticker -->
-                    <div class="absolute -top-6 -right-6 glass-card rounded-2xl p-4 w-60 shadow-lg scale-90 sm:scale-100 animate-pulse duration-2000">
+                    <div class="absolute -top-14 -right-10 glass-card rounded-2xl p-4 w-60 shadow-lg scale-90 sm:scale-100 animate-pulse duration-2000">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-slate-400">LIVE BOT ACTIVITY</span>
                             <span class="text-[10px] bg-green-500/15 text-green-600 font-bold px-2 py-0.5 rounded-full uppercase">Active</span>
@@ -616,7 +616,7 @@
                     <div class="md:col-span-7 space-y-6">
                         <div class="flex justify-between items-center">
                             <label for="deposit-number" class="text-sm font-semibold text-slateDark">Investment Amount ($)</label>
-                            <input type="number" id="deposit-number" min="100" max="50000" step="50" value="1000" class="w-28 text-right bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 font-bold font-mono text-blue-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                            <input type="number" id="deposit-number" min="100" max="10000" step="50" value="1000" class="w-28 text-right bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 font-bold font-mono text-blue-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                         </div>
                         
                         <!-- Slider input -->
@@ -646,15 +646,15 @@
                         <div class="space-y-1.5">
                             <div class="flex justify-between items-center">
                                 <span class="text-xs text-slate-500 font-medium">Daily Earnings:</span>
-                                <strong class="text-base font-bold text-slateDark font-mono" id="calc-daily-payout">$100.00</strong>
+                                <strong class="text-base font-bold text-slateDark font-mono" id="calc-daily-payout">$1000.00</strong>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-xs text-slate-500 font-medium">Monthly Earnings (30D):</span>
-                                <strong class="text-base font-bold text-slateDark font-mono" id="calc-monthly-payout">$3,000.00</strong>
+                                <strong class="text-base font-bold text-slateDark font-mono" id="calc-monthly-payout">$30,000.00</strong>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-xs text-slate-500 font-semibold text-orange-600">Max Withdrawal (200%):</span>
-                                <strong class="text-lg font-black text-orange-600 font-mono" id="calc-capping-payout">$2,000.00</strong>
+                                <strong class="text-lg font-black text-orange-600 font-mono" id="calc-capping-payout">$20,000.00</strong>
                             </div>
                         </div>
                     </div>
@@ -874,14 +874,14 @@
                 <!-- Logo & Disclaimer -->
                 <div class="space-y-6">
                     <a href="#" class="flex items-center gap-3">
-                        <div class="w-9 h-9 flex items-center justify-center bg-gradient-to-tr from-blue-600 to-sky-400 rounded-lg shadow-lg">
-                            @if(file_exists(public_path('images/logo.png')))
-                                <img src="{{ asset('images/logo.png') }}" class="w-7 h-7 object-contain" alt="SkyWorld logo text">
+                        <!-- <div class="w-9 h-9 flex items-center justify-center bg-gradient-to-tr from-blue-600 to-sky-400 rounded-lg shadow-lg"> -->
+                            @if(file_exists(public_path('images/54.png')))
+                                <img src="{{ asset('images/54.png') }}" class=" object-contain" width="150px" alt="SkyWorld logo text">
                             @else
                                 <i class="fa-solid fa-chart-line-up text-white text-sm"></i>
                             @endif
-                        </div>
-                        <span class="text-xl font-bold font-heading tracking-tight">SkyWorld</span>
+                        <!-- </div> -->
+                        <!-- <span class="text-xl font-bold font-heading tracking-tight">SkyWorld</span> -->
                     </a>
                     <p class="text-xs text-slate-400 leading-relaxed">
                         Risk Warning: Trading Forex indices involve substantial volatility. The 200% capping policy is actively enforced automatically by algorithmic liquidity pool nodes to ensure payout stability.
@@ -905,7 +905,7 @@
                     <ul class="space-y-2 text-sm text-slate-400">
                         <li><a href="/member/login" class="hover:text-white transition-colors">Login Portal</a></li>
                         <li><a href="/member/register" class="hover:text-white transition-colors">Register Account</a></li>
-                        <li><a href="/admin/login" class="hover:text-white transition-colors">Corporate Administration</a></li>
+                        <!-- <li><a href="/admin/login" class="hover:text-white transition-colors">Corporate Administration</a></li> -->
                     </ul>
                 </div>
 
@@ -1051,7 +1051,7 @@
             function updateCalculator() {
                 let amount = parseFloat(depositNumber.value);
                 if (isNaN(amount) || amount < 100) {
-                    amount = 100;
+                    amount = 1000;
                 }
                 
                 let rate = 0.08; // 8%
