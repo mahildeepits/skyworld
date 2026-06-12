@@ -118,7 +118,7 @@
 
                                         <td>
                                             <a target="_blank" href="{{ route('admin.edit.user',['member_id'=>$user->member_id]) }}" class="btn btn-info btn-sm">Edit</a>
-                                            <!-- <a href="javascript:void(0)" onclick="commanModel(`{{route('admin.setpaid.form',$user->id)}}`,'SET USER PAID')" class="btn btn-main btn-sm">SET PAID</a> -->
+                                            <a href="javascript:void(0)" onclick="commanModel(`{{route('admin.setpaid.form',$user->id)}}`,'Add Wallet Balance')" class="btn btn-main btn-sm">Add Balance</a>
                                             <a href="{{ route('admin.users',['kyc_details'=>$user->id]) }}" class="btn btn-warning btn-sm" title="View KYC">KYC</a>
                                             {{-- 
                                             @if($user->is_blocked)

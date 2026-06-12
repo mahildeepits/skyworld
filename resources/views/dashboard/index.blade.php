@@ -244,7 +244,9 @@
   use Carbon\Carbon;
   $user = authUser();
   $walletIncomes = $user->walletIncomesByKey('all');
-  $walletAmount = $user->walletIncomesByKey('totalIncome') ?? 0;
+  $unsettledROI = $user->getCurrentMonthAccumulatedROI();
+  $unsettledLevelROI = $user->getCurrentMonthAccumulatedLevelROI();
+  $walletAmount = ($user->walletIncomesByKey('totalIncome') ?? 0) + $unsettledROI + $unsettledLevelROI;
   $lockedBalance = $user->lockedStakings()->sum('amount') ?? 0;
   
   $loginCount = $user->checkIns->count();
@@ -255,16 +257,18 @@
   // Incomes Mapping for the detailed table (Using UnifiedTransaction now)
   $dailyIncomes = [
       'trade'         => $user->today_trade_income,
-      'team'          => $user->today_team_commission,
+      'team'          => $user->today_team_commission + $user->getCurrentMonthDailyLevelROI(),
       'direct'        => $user->today_direct_income,
       'bonus'         => $user->today_bonus_income,
+      'roi'           => $user->getCurrentMonthDailyROI(),
   ];
   
   $totalIncomes = [
       'trade'         => $walletIncomes['tradeIncome'] ?? 0,
-      'team'          => $walletIncomes['teamCommission'] ?? 0,
+      'team'          => ($walletIncomes['teamCommission'] ?? 0) + $unsettledLevelROI,
       'direct'        => $walletIncomes['directIncome'] ?? 0,
       'bonus'         => $walletIncomes['bonusIncome'] ?? 0,
+      'roi'           => ($walletIncomes['roiIncome'] ?? 0) + $unsettledROI,
   ];
 
   // Team Stats
@@ -569,7 +573,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(['trade' => 'Trade Income', 'team' => 'IB Income'] as $key => $label)
+                    @foreach(['trade' => 'Trade Income', 'team' => 'IB Income', 'roi' => 'ROI Income'] as $key => $label)
                     <tr style="border-bottom: 1px solid #f8fafc;">
                         <td class="ps-0 py-3">
                             <span class="fw-600 text-dark">{{ $label }}</span>

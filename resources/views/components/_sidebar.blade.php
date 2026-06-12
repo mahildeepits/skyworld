@@ -103,16 +103,16 @@
       </div>
     </li>
 
-    <!-- <li class="nav-item {{ Route::is('id-card') ? 'active' : '' }}">
-      <a class="nav-link" href="{{ route('id-card') }}">
-        <i class="icon-badge menu-icon"></i>
-        <span class="menu-title">ID Card</span>
-      </a>
-    </li> -->
-     <li class="nav-item  {{ Route::is('member.wallet') ? 'active' : '' }}">
+    <li class="nav-item  {{ Route::is('member.wallet') ? 'active' : '' }}">
       <a class="nav-link" href="{{ route('member.wallet') }}">
         <i class="icon-credit-card menu-icon"></i>
         <span class="menu-title">Transactions</span>
+      </a>
+    </li>
+    <li class="nav-item {{ Route::is('wallet.deposit') ? 'active' : '' }}">
+      <a class="nav-link" href="{{ route('wallet.deposit') }}">
+        <i class="icon-wallet menu-icon"></i>
+        <span class="menu-title">Deposit</span>
       </a>
     </li>
     <li class="nav-item {{ Route::is('wallet.withdrawl') ? 'active' : '' }}">

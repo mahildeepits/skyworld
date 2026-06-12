@@ -26,6 +26,9 @@ $route = 'wallet.withdrawl';
 $method = 'post';
 $user = authUser();
 $userWallets = $user->wallet_addresses ?? [];
+$unsettledROI = $user->getCurrentMonthAccumulatedROI();
+$unsettledLevelROI = $user->getCurrentMonthAccumulatedLevelROI();
+$totalUnsettled = $unsettledROI + $unsettledLevelROI;
 @endphp
 
     <x-page-breadcrumb current-page='Withdrawl' sub-menu='Wallet' />
@@ -76,7 +79,12 @@ $userWallets = $user->wallet_addresses ?? [];
                                         </div>
                                         <input type="text" name="amount" class="form-control" id="amount" placeholder="0.00" style="font-weight: 600;">
                                         <div class="d-flex justify-content-between mt-1">
-                                            <span><small class="text-muted">Available Balance: <b class="text-dark">{{ $availableBalance ?? '0.00' }} USDT </b> </small></span>
+                                            <span>
+                                                <small class="text-muted">Available Balance: <b class="text-dark">{{ $availableBalance ?? '0.00' }} USDT </b> </small>
+                                                @if($totalUnsettled > 0)
+                                                    <br/><small class="text-muted text-wrap font-italic" style="font-size: 0.72rem; line-height: 1.1; display: inline-block; max-width: 280px;"><i class="fa fa-info-circle"></i> Excludes ${{ number_format($totalUnsettled, 2) }} unsettled monthly ROI & Level commissions</small>
+                                                @endif
+                                            </span>
                                             @if($lockedTrading > 0)
                                                 <span><small class="text-danger">Trading Locked: <b>{{ $lockedTrading }} USDT</b></small></span>
                                             @endif

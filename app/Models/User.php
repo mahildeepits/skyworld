@@ -382,6 +382,7 @@ class User extends Authenticatable
             $bonusIncome    = $allTrans->where('category', 'Bonus Income')->sum('amount');
             $tradeIncome    = $allTrans->where('category', 'Trade Income')->sum('amount');
             $ambasdor       = $allTrans->where('category', 'Ambassador Income')->sum('amount');
+            $roiIncome      = $allTrans->where('category', 'Daily ROI Income')->sum('amount');
             
             $stakingUnlocked = $allTrans->where('category', 'Staking Return')->sum('amount');
             $withdrawls     = $allTrans->where('category', 'Withdrawal')
@@ -396,7 +397,7 @@ class User extends Authenticatable
             $totalDebits    = $allTrans->where('transaction_type', 'Debit')->sum('amount');
 
             $totalIncome    = round($totalCredits - $totalDebits, 2);
-            $myIncome       = round($directIncome + $teamCommission + $taskCommission + $communityBonus + $uplineBonus + $rewardIncome + $bonusIncome + $tradeIncome + $ambasdor, 2);
+            $myIncome       = round($directIncome + $teamCommission + $taskCommission + $communityBonus + $uplineBonus + $rewardIncome + $bonusIncome + $tradeIncome + $ambasdor + $roiIncome, 2);
 
             $this->walletCache = [
                 'directIncome'  => $directIncome,
@@ -407,6 +408,7 @@ class User extends Authenticatable
                 'rewardIncome'  => $rewardIncome,
                 'bonusIncome'   => $bonusIncome,
                 'tradeIncome'   => $tradeIncome,
+                'roiIncome'     => $roiIncome,
                 'total'         => $totalIncome,
                 'adminCharges'  => 0,
                 'myIncome'      => $myIncome,
@@ -700,5 +702,166 @@ class User extends Authenticatable
         $limit = $this->getWithdrawalLimit();
         $withdrawn = $this->getTotalWithdrawals();
         return max(0, round($limit - $withdrawn, 2));
+    }
+
+    public function getDownlineLevel($downline) {
+        $parents = $downline->parent_string_array;
+        
+        $uplineIndex = array_search($this->id, $parents);
+        $downlineIndex = array_search($downline->id, $parents);
+        
+        if ($uplineIndex !== false && $downlineIndex !== false) {
+            return $downlineIndex - $uplineIndex;
+        }
+        
+        return null;
+    }
+
+    public function getCurrentMonthDailyROI() {
+        $agentCategory = $this->agentCategory();
+        if (!$agentCategory) {
+            return 0;
+        }
+
+        $rate = (float) $agentCategory->massive_order_rate;
+        if ($rate <= 0) {
+            return 0;
+        }
+
+        $totalDeposit = $this->getTotalDeposits();
+        if ($totalDeposit <= 0) {
+            return 0;
+        }
+
+        $daysInMonth = now()->daysInMonth;
+        return round(($totalDeposit * ($rate / 100)) / $daysInMonth, 2);
+    }
+
+    public function getCurrentMonthAccumulatedROI() {
+        $agentCategory = $this->agentCategory();
+        if (!$agentCategory) {
+            return 0;
+        }
+
+        $rate = (float) $agentCategory->massive_order_rate;
+        if ($rate <= 0) {
+            return 0;
+        }
+
+        // Fetch completed/success deposits of the user
+        $deposits = $this->unifiedTransactions()
+            ->where(function($query) {
+                $query->where('category', 'Deposit')
+                      ->orWhere(function($q) {
+                          $q->where('category', 'Fund Transfer')
+                            ->where('transaction_type', 'Credit');
+                      });
+            })
+            ->whereIn('status', ['Completed', 'success'])
+            ->get();
+
+        $totalAccumulated = 0;
+        $now = now();
+        $daysInMonth = $now->daysInMonth;
+        $currentMonthStart = $now->copy()->startOfMonth();
+        $currentMonthEnd = $now->copy()->endOfMonth();
+
+        foreach ($deposits as $deposit) {
+            $depositDate = \Carbon\Carbon::parse($deposit->created_at);
+            
+            if ($depositDate->greaterThan($currentMonthEnd)) {
+                continue;
+            }
+
+            // Calculate active days in the current month
+            if ($depositDate->lessThan($currentMonthStart)) {
+                $activeDays = $now->day;
+            } else {
+                $activeDays = $now->day - $depositDate->day + 1;
+            }
+
+            if ($activeDays > 0) {
+                $depositROI = ($deposit->amount * ($rate / 100) / $daysInMonth) * $activeDays;
+                $totalAccumulated += $depositROI;
+            }
+        }
+
+        return round($totalAccumulated, 2);
+    }
+
+    public function getCurrentMonthDailyLevelROI() {
+        // Find all paid downline members
+        $downlines = self::where('is_paid', 1)
+            ->whereRaw("FIND_IN_SET(?, parent_string)", [$this->id])
+            ->where('id', '!=', $this->id)
+            ->get();
+
+        $totalDailyLevelROI = 0;
+        $paidDirectsCount = $this->getPaidDirectsCount();
+
+        $percentages = [
+            1 => 10,
+            2 => 9,
+            3 => 8,
+            4 => 6,
+            5 => 5,
+            6 => 4,
+            7 => 3,
+            8 => 2,
+            9 => 2,
+            10 => 1,
+        ];
+
+        foreach ($downlines as $downline) {
+            $level = $this->getDownlineLevel($downline);
+            
+            if ($level && $level >= 1 && $level <= 10 && $paidDirectsCount >= $level) {
+                $childDailyROI = $downline->getCurrentMonthDailyROI();
+                if ($childDailyROI > 0) {
+                    $percentage = $percentages[$level];
+                    $totalDailyLevelROI += ($childDailyROI * $percentage) / 100;
+                }
+            }
+        }
+
+        return round($totalDailyLevelROI, 2);
+    }
+
+    public function getCurrentMonthAccumulatedLevelROI() {
+        // Find all paid downline members
+        $downlines = self::where('is_paid', 1)
+            ->whereRaw("FIND_IN_SET(?, parent_string)", [$this->id])
+            ->where('id', '!=', $this->id)
+            ->get();
+
+        $totalAccumulatedLevelROI = 0;
+        $paidDirectsCount = $this->getPaidDirectsCount();
+
+        $percentages = [
+            1 => 10,
+            2 => 9,
+            3 => 8,
+            4 => 6,
+            5 => 5,
+            6 => 4,
+            7 => 3,
+            8 => 2,
+            9 => 2,
+            10 => 1,
+        ];
+
+        foreach ($downlines as $downline) {
+            $level = $this->getDownlineLevel($downline);
+            
+            if ($level && $level >= 1 && $level <= 10 && $paidDirectsCount >= $level) {
+                $childAccumulatedROI = $downline->getCurrentMonthAccumulatedROI();
+                if ($childAccumulatedROI > 0) {
+                    $percentage = $percentages[$level];
+                    $totalAccumulatedLevelROI += ($childAccumulatedROI * $percentage) / 100;
+                }
+            }
+        }
+
+        return round($totalAccumulatedLevelROI, 2);
     }
 }

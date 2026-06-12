@@ -281,7 +281,7 @@
                             <strong>{{ $category->community_bonus_rate }}% Rate</strong>
                         </div>
                     </div> -->
-                    @if($category->level_upgrade_income)
+                    <!-- @if($category->level_upgrade_income)
                     <div class="benefit-item">
                         <div class="benefit-icon"><i class="icon-arrow-up-circle"></i></div>
                         <div class="benefit-text">
@@ -319,7 +319,14 @@
                             <strong>{{ $category->team_c_profit }}%</strong>
                         </div>
                     </div>
-                    @endif
+                    @endif -->
+                    <div class="benefit-item">
+                        <div class="benefit-icon"><i class="icon-arrow-up-circle"></i></div>
+                        <div class="benefit-text">
+                            <span>Monthly Returns</span>
+                            <strong>200%</strong>
+                        </div>
+                    </div>
                     
                     @if($category->valid_downline)
                     <div class="benefit-item">

@@ -59,9 +59,9 @@ class TransactionsController extends Controller
 
         // Restriction: Wallet Address Must Be Set First
         $userWallets = $user->wallet_addresses ?? [];
-        if (empty($userWallets['BEP-20'])) {
-            return redirect()->route('edit.wallet.address')->with('error', 'Error|Please add your BEP-20 wallet address first.');
-        }
+        // if (empty($userWallets['BEP-20'])) {
+        //     return redirect()->route('edit.wallet.address')->with('error', 'Error|Please add your BEP-20 wallet address first.');
+        // }
 
         $type = request()->get('type') ?? 'BEP-20';
         $address = getWalletAddress(adminMember(), $type);

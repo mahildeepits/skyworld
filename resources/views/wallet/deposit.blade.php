@@ -5,7 +5,7 @@
         <div class="col-md-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
-                    <div class="row mb-3">
+                    <!-- <div class="row mb-3">
                         <div class="col-md-12 text-end">
                             <a href="{{ route('track.deposit.cron') }}"
                                class="btn btn-main btn-sm text-white"
@@ -13,14 +13,14 @@
                                 Track Deposits
                             </a>
                         </div>
-                    </div>
+                    </div> -->
                     <div style="max-width: 500px; margin: 0 auto;">
-                        <div class="alert alert-warning text-center" style="border-radius: 10px;">
+                        <!-- <div class="alert alert-warning text-center" style="border-radius: 10px;">
                             <h5 class="mb-2"><i class="bx bxs-error-circle"></i> IMPORTANT NOTICE</h5>
                             <p class="mb-1" style="font-size: 14px;">We recommend sending funds from your registered wallet address:</p>
                             <p class="mb-2" style="word-break: break-all; font-weight: bold; color: #d9534f;">{{ getWalletAddress(authUser(), $type) ?: 'No address registered' }}</p>
                             <small class="d-block" style="font-size: 12px;">If you use a different address, please specify it below during submission to ensure tracking.</small>
-                        </div>
+                        </div> -->
                         <form action="{{route('wallet.deposit')}}" method="post" onsubmit="ajaxFormSubmit($(this))">
                             @csrf
                             <div class="row">
@@ -40,17 +40,17 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group my-2">
-                                        <select name="type_disabled" id="type_disabled" class="form-control form-select" disabled>
+                                        <select name="type" id="type" class="form-control form-select">
                                             <option value="BEP-20" selected>BEP-20</option>
                                         </select>
-                                        <input type="hidden" name="type" value="BEP-20">
+                                        <!-- <input type="hidden" name="type" value="BEP-20"> -->
                                     </div>
                                 </div>
                                 <div class="col-12 mt-2" >
                                     <ol class="px-3 m-0" style="font-weight:500; padding-inline-start: 0;">
                                         <li><p class="m-0 pt-1"> Buy USDT on Coinbase, Binance or other exchange</p></li>
                                         <li><p class="m-0 pt-1"> Send/Withdrawl USDT to the address with the network below.</p></li>
-                                        <li><p class="m-0 pt-1"> Submit your sender wallet address below to track your deposit.</p></li>
+                                        <!-- <li><p class="m-0 pt-1"> Submit your sender wallet address below to track your deposit.</p></li> -->
                                     </ol>
                                 </div>
                                 <div class="col-12 mt-2">
@@ -65,11 +65,11 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <div style="max-width:150px;margin:10px auto;">
+                                    <div style="width:fit-content; background:#fff; border-radius: 10px; padding: 10px; justify-self: center; box-shadow: 0px 0px 10px rgba(0,0,0,0.3);">
                                         {!! $qrCode !!}
                                     </div>
                                 </div>
-                                <div class="col-12">
+                                <!-- <div class="col-12">
                                     <div class="form-group mb-2">
                                         <label for="paid_from_address" class="my-2">Wallet Address You Paid From <span class="text-danger">*</span></label>
                                         <div class="input-group">
@@ -78,7 +78,7 @@
                                         </div>
                                         <div class="invalid-feedback"></div>
                                     </div>
-                                </div>
+                                </div> -->
                                 
                             </div>
                         </form>
