@@ -10,36 +10,38 @@
                         <h5 class="card-title">My Directs</h5>
                     </div>
                     <div class="col-md-12 mt-3">
-                        <table class="table " >
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Name</th>
-                                    <th>User ID</th>
-                                    <th>Package</th>
-                                    <th>Deposit Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($directs as $key => $user)
+                        <div class="table-responsive">
+                            <table class="table text-nowrap" >
+                                <thead>
                                     <tr>
-                                        <td>{{ $loop->index +1 }}</td>
-                                        <td>{{ $user->name }}</td>
-                                        <td>{{ $user->member_id }}</td>
-                                        <td>
-                                            @if ($user->is_paid)
-                                                <span class="bg-success text-white px-3 py-1 rounded">{{ $user->agentCategory()?->name ?? 'Paid' }}</span>
-                                            @else
-                                                <span class="bg-danger text-white px-3 py-1 rounded">No Package</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <strong>${{ number_format($user->getTotalDeposits(), 2) }}</strong>
-                                        </td>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>User ID</th>
+                                        <th>Package</th>
+                                        <th>Deposit Amount</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach($directs as $key => $user)
+                                        <tr>
+                                            <td>{{ $loop->index +1 }}</td>
+                                            <td>{{ $user->name }}</td>
+                                            <td>{{ $user->member_id }}</td>
+                                            <td>
+                                                @if ($user->is_paid)
+                                                    <span class="bg-success text-white px-3 py-1 rounded">{{ $user->agentCategory()?->name ?? 'Paid' }}</span>
+                                                @else
+                                                    <span class="bg-danger text-white px-3 py-1 rounded">No Package</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <strong>${{ number_format($user->getTotalDeposits(), 2) }}</strong>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 </div>
@@ -56,6 +58,5 @@
 @section('scripts')
     @parent
     <script type="text/javascript">
-        f
     </script>
 @endsection

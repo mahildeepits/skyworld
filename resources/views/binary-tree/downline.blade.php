@@ -21,38 +21,40 @@
                             @if ($loopChilds->count() > 0)
                                 <div class="col-md-12 mt-3">
                                     <h6 class="card-title">Team {{ chr(64 + $i) }}</h6>
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Name</th>
-                                                <th>UserID</th>
-                                                <th>Package</th>
-                                                <th>Deposit Amount</th>
-                                                {{-- <th>Position</th> --}}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($loopChilds as $user)
+                                    <div class="table-responsive">
+                                        <table class="table text-nowrap">
+                                            <thead>
                                                 <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $user->name }}</td>
-                                                    <td>{{ $user->member_id }}</td>
-                                                    <td>
-                                                         @if ($user->is_paid)
-                                                             <span class="bg-success text-white px-3 py-1 rounded">{{ $user->agentCategory()?->name ?? 'Paid' }}</span>
-                                                         @else
-                                                             <span class="bg-danger text-white px-3 py-1 rounded">No Package</span>
-                                                         @endif
-                                                    </td>
-                                                    <td>
-                                                         <strong>${{ number_format($user->getTotalDeposits(), 2) }}</strong>
-                                                    </td>
-                                                    {{-- <td>{{ ucfirst($user->parent_leg) }}</td> --}}
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>UserID</th>
+                                                    <th>Package</th>
+                                                    <th>Deposit Amount</th>
+                                                    {{-- <th>Position</th> --}}
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($loopChilds as $user)
+                                                    <tr>
+                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td>{{ $user->name }}</td>
+                                                        <td>{{ $user->member_id }}</td>
+                                                        <td>
+                                                             @if ($user->is_paid)
+                                                                 <span class="bg-success text-white px-3 py-1 rounded">{{ $user->agentCategory()?->name ?? 'Paid' }}</span>
+                                                             @else
+                                                                 <span class="bg-danger text-white px-3 py-1 rounded">No Package</span>
+                                                             @endif
+                                                        </td>
+                                                        <td>
+                                                             <strong>${{ number_format($user->getTotalDeposits(), 2) }}</strong>
+                                                        </td>
+                                                        {{-- <td>{{ ucfirst($user->parent_leg) }}</td> --}}
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             @endif
                         @endif

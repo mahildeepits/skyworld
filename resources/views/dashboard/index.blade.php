@@ -573,7 +573,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(['trade' => 'Trade Income', 'team' => 'IB Income', 'roi' => 'ROI Income'] as $key => $label)
+                    @foreach([ 'roi' => 'Profit Income', 'team' => 'IB Income'] as $key => $label)
                     <tr style="border-bottom: 1px solid #f8fafc;">
                         <td class="ps-0 py-3">
                             <span class="fw-600 text-dark">{{ $label }}</span>
