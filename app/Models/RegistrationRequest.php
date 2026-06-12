@@ -13,6 +13,7 @@ class RegistrationRequest extends Model
         'user_id',
         'agent_category_id',
         'deposit_amount',
+        'receipt',
         'status',
     ];
 

@@ -91,7 +91,7 @@ class TransactionsService{
     }
     public function addTransaction($request){
         $validator = Validator::make($request->all(),[
-            'amount'    =>   'required|numeric|min:50',
+            'amount'    =>   'required|numeric|min:10',
             'email_otp' => 'required',
         ]);
         if($validator->fails()){
@@ -114,50 +114,50 @@ class TransactionsService{
         $formattedBankDetails = $userWallets['BEP-20'];
 
         // 3. Check Balance with Trading Lock & $50 Lock
-        $totalBalance = $user->walletIncomesByKey();
+        $totalBalance = $user->income_balance;
         $lockedTrading = $user->getTradingLockedAmount();
-        $availableBalance = round($totalBalance - $lockedTrading - 50, 2);
+        $availableBalance = round($totalBalance - $lockedTrading, 2);
 
-        if($request->amount > $availableBalance){
-            return response()->json(['status' => false,'message' => 'Insufficient Balance. $50 must stay in your wallet and your trading amount ($' . $lockedTrading . ') is also locked.','code' => 400]);
-        }
+        // if($request->amount > $availableBalance){
+        //     return response()->json(['status' => false,'message' => 'Insufficient Balance. $50 must stay in your wallet and your trading amount ($' . $lockedTrading . ') is also locked.','code' => 400]);
+        // }
 
         // 3.0.1 Check Max Withdrawal Limit (2x Deposit + Referrals)
         $maxLimit = $user->getWithdrawalLimit();
         $totalWithdrawn = $user->getTotalWithdrawals();
         $remainingLimit = $user->getRemainingWithdrawalLimit();
 
-        if ($request->amount > $remainingLimit) {
-            return response()->json([
-                'status' => false, 
-                'message' => 'Withdrawal Limit Exceeded! Your total limit is $' . number_format($maxLimit, 2) . '. Remaining limit is $' . number_format($remainingLimit, 2) . '. Please deposit more or refer direct members to increase your limit.', 
-                'code' => 400
-            ]);
-        }
+        // if ($request->amount > $remainingLimit) {
+        //     return response()->json([
+        //         'status' => false, 
+        //         'message' => 'Withdrawal Limit Exceeded! Your total limit is $' . number_format($maxLimit, 2) . '. Remaining limit is $' . number_format($remainingLimit, 2) . '. Please deposit more or refer direct members to increase your limit.', 
+        //         'code' => 400
+        //     ]);
+        // }
 
         // 3.0.2 Check Per-Transaction Category Limit
         $activeCategory = $user->agentCategory();
-        if ($activeCategory) {
-            $categoryUnlockBalance = $activeCategory->unlock_balance;
-            $maxSingleLimit = ($categoryUnlockBalance == 50) ? 200 : $categoryUnlockBalance;
+        // if ($activeCategory) {
+        //     $categoryUnlockBalance = $activeCategory->unlock_balance;
+        //     $maxSingleLimit = ($categoryUnlockBalance == 50) ? 200 : $categoryUnlockBalance;
 
-            if ($request->amount > $maxSingleLimit) {
-                return response()->json([
-                    'status' => false, 
-                    'message' => "Maximum withdrawal limit for your current level ({$activeCategory->name}) is $" . number_format($maxSingleLimit, 2) . " per transaction.", 
-                    'code' => 400
-                ]);
-            }
-        }
+        //     if ($request->amount > $maxSingleLimit) {
+        //         return response()->json([
+        //             'status' => false, 
+        //             'message' => "Maximum withdrawal limit for your current level ({$activeCategory->name}) is $" . number_format($maxSingleLimit, 2) . " per transaction.", 
+        //             'code' => 400
+        //         ]);
+        //     }
+        // }
 
         // 3.1 Check Activation Date (3 days wait from Agent Category Activation)
         $latestAgentCategoryRecord = $user->firstUserAgentCategory;
         $activationDate = $latestAgentCategoryRecord ? $latestAgentCategoryRecord->created_at : ($user->joiningKit?->used_at ?? $user->created_at);
         $daysSinceActivation = \Carbon\Carbon::parse($activationDate)->diffInDays(\Carbon\Carbon::now());
 
-        if ($daysSinceActivation < 3) {
-            return response()->json(['status' => false, 'message' => 'Withdrawal can be done after 3 days of activation/upgrade.', 'code' => 400]);
-        }
+        // if ($daysSinceActivation < 3) {
+        //     return response()->json(['status' => false, 'message' => 'Withdrawal can be done after 3 days of activation/upgrade.', 'code' => 400]);
+        // }
 
 
 
@@ -167,9 +167,9 @@ class TransactionsService{
                             ->latest()
                             ->first();
 
-        if ($lastWithdrawal && \Carbon\Carbon::parse($lastWithdrawal->created_at)->addHours(72)->isFuture()) {
-            return response()->json(['status' => false, 'message' => 'You can only make another withdrawal 72 hours after your previous withdrawal.', 'code' => 400]);
-        }
+        // if ($lastWithdrawal && \Carbon\Carbon::parse($lastWithdrawal->created_at)->addHours(72)->isFuture()) {
+        //     return response()->json(['status' => false, 'message' => 'You can only make another withdrawal 72 hours after your previous withdrawal.', 'code' => 400]);
+        // }
 
 
 

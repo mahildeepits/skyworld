@@ -25,7 +25,7 @@ class UsersController extends Controller
         if($request->has('kyc_details')){
             $kycDetails = KycDoc::whereUserId($request->kyc_details)->get();
         }
-        $usersModel = User::with('kyc_docs')->whereIn('role',[3])->orderBy('id','desc')->get();
+        $usersModel = User::with(['kyc_docs', 'registrationRequest'])->whereIn('role',[3])->orderBy('id','desc')->get();
         return view('admin.users.index',['users'=>$usersModel,'kycDetails'=>$kycDetails]);
     }
 
@@ -36,6 +36,7 @@ class UsersController extends Controller
             if($userModelObject != null){
                 $userModel = $userModelObject->toArray();
                 $userModel['user_id'] = $userModelObject->id;
+                $userModel['deposit_amount'] = $userModelObject->getTotalDeposits();
                 if($userModelObject->profile_rel != null){
                     $userProfile = $userModelObject->profile_rel->toArray();
                     unset($userProfile['id']);
@@ -57,7 +58,79 @@ class UsersController extends Controller
 
     public function profileUpdate(Request $request){
         $userModel = User::find($request->id);
-        $userModel->fill($request->except(['password']));
+
+        // Reconcile Deposit Amount if provided
+        if ($request->has('deposit_amount')) {
+            $newDeposit = (float)$request->deposit_amount;
+            $currentDeposit = (float)$userModel->getTotalDeposits();
+
+            if ($newDeposit != $currentDeposit) {
+                $transaction = \App\Models\Transaction::where('user_id', $userModel->id)
+                    ->where('type', 'deposit')
+                    ->latest()
+                    ->first();
+
+                $unifiedTransaction = \App\Models\UnifiedTransaction::where('user_id', $userModel->id)
+                    ->where('category', 'Deposit')
+                    ->latest()
+                    ->first();
+
+                $tracking = \App\Models\TransactionTracking::where('user_id', $userModel->id)
+                    ->where('type', 'deposit')
+                    ->latest()
+                    ->first();
+
+                if ($transaction && $unifiedTransaction) {
+                    $diff = $newDeposit - $currentDeposit;
+
+                    $transaction->amount += $diff;
+                    $transaction->net_amount += $diff;
+                    $transaction->save();
+
+                    $unifiedTransaction->amount += $diff;
+                    $unifiedTransaction->save();
+
+                    if ($tracking) {
+                        $tracking->amount += $diff;
+                        $tracking->net_amount += $diff;
+                        $tracking->save();
+                    }
+                } else {
+                    if ($newDeposit > 0) {
+                        $newTx = \App\Models\Transaction::create([
+                            'user_id'          => $userModel->id,
+                            'type'             => 'deposit',
+                            'amount'           => $newDeposit,
+                            'transaction_fees' => 0,
+                            'net_amount'       => $newDeposit,
+                            'status'           => 'success',
+                            'wallet_address'   => 'System',
+                        ]);
+
+                        \App\Models\TransactionTracking::create([
+                            'user_id'     => $userModel->id,
+                            'type'        => 'deposit',
+                            'keyword'     => 'Transaction',
+                            'amount'      => $newDeposit,
+                            'net_amount'  => $newDeposit,
+                            'related_id'  => $newTx->id,
+                            'remark'      => 'Deposit adjusted by Admin',
+                        ]);
+
+                        \App\Models\UnifiedTransaction::create([
+                            'user_id'          => $userModel->id,
+                            'amount'           => $newDeposit,
+                            'transaction_type' => 'Credit',
+                            'category'         => 'Deposit',
+                            'status'           => 'Completed',
+                            'description'      => 'Deposit adjusted by Admin',
+                        ]);
+                    }
+                }
+            }
+        }
+
+        $userModel->fill($request->except(['password', 'deposit_amount']));
         if($request->has('password') && $request->password != null){
             $userModel->password = \Hash::make($request->password);
             $userModel->enc_password = \Crypt::encrypt($request->password);

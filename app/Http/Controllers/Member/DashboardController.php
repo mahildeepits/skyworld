@@ -35,7 +35,7 @@ class DashboardController extends Controller
         $user = authUser();
         $currentLevel = $user->agentCategory();
         
-        $walletAmount = $user->walletIncomesByKey();
+        $walletAmount = $user->walletIncomesByKey('deposits');
         $teamACount = $user->allChildMembers->where('is_paid', 1)->count();
         $totalPaidDownline = $user->allPiadChildsExceptSelf()->count();
         $teamBCCount = $totalPaidDownline - $teamACount;

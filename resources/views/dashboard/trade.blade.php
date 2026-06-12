@@ -207,7 +207,7 @@
                                 @if($limit && $totalWalletBalance > $limit)
                                     (Capped at ${{ number_format($limit, 0) }})
                                 @else
-                                    (Current Wallet Balance)
+                                    (Current Deposit Balance)
                                 @endif
                             </small>
                         </div>

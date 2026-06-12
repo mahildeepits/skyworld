@@ -208,7 +208,7 @@
                     <div class="req-grid">
                         {{-- Balance --}}
                         <div class="req-item">
-                            <span class="req-item-label">Wallet Balance</span>
+                            <span class="req-item-label">Deposited Amount</span>
                             <span class="req-item-value {{ $walletAmount >= $category->unlock_balance ? 'req-met' : 'req-unmet' }}">
                                 ${{ number_format($walletAmount, 0) }} / ${{ number_format($category->unlock_balance, 0) }}
                             </span>

@@ -216,6 +216,7 @@ class AuthController extends Controller
                 'user_id' => $userModel->id,
                 'agent_category_id' => $details['agent_category_id'] ?? null,
                 'deposit_amount' => $details['deposit_amount'] ?? 0,
+                'receipt' => $details['receipt'] ?? null,
                 'status' => 'pending',
             ]);
             if($details['sponsor'] != 'Company') {
@@ -242,7 +243,15 @@ class AuthController extends Controller
             }
         }
 
-        $registrationResult = $this->completeRegistration($request->all(), $request);
+        $details = $request->all();
+        if ($request->hasFile('receipt')) {
+            $file = $request->file('receipt');
+            $filename = "receipt_" . time() . "_" . rand(11111111, 99999999) . "." . $file->getClientOriginalExtension();
+            $file->move('images/receipts/', $filename);
+            $details['receipt'] = $filename;
+        }
+
+        $registrationResult = $this->completeRegistration($details, $request);
         
         if ($registrationResult['status']) {
             return redirect()->route('register.details')->with('success', 'Registration successful!');

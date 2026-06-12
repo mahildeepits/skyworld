@@ -140,7 +140,7 @@ $totalUnsettled = $unsettledROI + $unsettledLevelROI;
                                         </h6>
                                         <ul class="pl-3 mb-0 text-muted" style="font-size: 0.82rem; line-height: 1.6;">
                                             <li class="mb-1">Withdrawal Process Takes 24-72 Hours</li>
-                                            <li class="mb-1">The Minimum Withdrawal Amount Is 50 USDT</li>
+                                            <li class="mb-1">The Minimum Withdrawal Amount Is 10 USDT</li>
                                             @if(isset($maxSingleLimit) && $maxSingleLimit > 0)
                                                 <li class="mb-1">Max withdrawal per transaction for your level (<b>{{ $activeCategory->name }}</b>) is <b>{{ $maxSingleLimit }} USDT</b></li>
                                             @endif

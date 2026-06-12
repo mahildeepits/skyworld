@@ -189,7 +189,7 @@ Route::group(['prefix' => 'admin'], function () {
         
         // Registration Requests
         Route::get('registration/requests', [RegistrationRequestController::class, 'index'])->name('admin.registration.requests');
-        Route::get('registration/requests/{id}/approve', [RegistrationRequestController::class, 'approve'])->name('admin.registration.requests.approve');
+        Route::post('registration/requests/{id}/approve', [RegistrationRequestController::class, 'approve'])->name('admin.registration.requests.approve');
         Route::get('registration/requests/{id}/reject', [RegistrationRequestController::class, 'reject'])->name('admin.registration.requests.reject');
         // Tasks Management
         Route::resource('tasks', TasksController::class);

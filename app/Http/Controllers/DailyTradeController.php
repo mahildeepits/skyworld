@@ -19,7 +19,7 @@ class DailyTradeController extends Controller
         $agentCategory = $user->agentCategory();
         $isEligible = ($user->is_paid == 1 && $agentCategory);
         
-        $totalWalletBalance = $user->walletIncomesByKey('totalIncome');
+        $totalWalletBalance = $user->walletIncomesByKey('deposits');
         $massiveOrderRate = $agentCategory ? $agentCategory->massive_order_rate : 0;
         
         // Find next level for capping limit
@@ -74,7 +74,7 @@ class DailyTradeController extends Controller
         }
 
         // Calculate Trading Base with Capping
-        $totalWalletBalance = $user->walletIncomesByKey('totalIncome');
+        $totalWalletBalance = $user->walletIncomesByKey('deposits');
         $nextCategory = \App\Models\AgentCategory::where('unlock_balance', '>', $agentCategory->unlock_balance)
             ->orderBy('unlock_balance', 'asc')
             ->first();

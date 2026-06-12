@@ -46,6 +46,12 @@
                                             {!! Form::email('email',null,['class'=>'form-control form-control-sm','placeholder'=>'Enter email']) !!}
                                         </div>
                                     </div>
+                                    <div class="form-group row">
+                                        {!! Form::label('deposit_amount','Deposit Balance ($)',['class'=>'col-sm-3 col-form-label col-form-label-sm']) !!}
+                                        <div class="col-sm-9">
+                                            {!! Form::number('deposit_amount',null,['class'=>'form-control form-control-sm','placeholder'=>'Enter Deposit Balance','step'=>'any']) !!}
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group row">

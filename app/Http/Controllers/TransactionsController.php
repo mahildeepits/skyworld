@@ -18,7 +18,7 @@ class TransactionsController extends Controller
             return redirect()->route('edit.wallet.address')->with('error', 'Error|Please add your BEP-20 wallet address first before making a withdrawal.');
         }
 
-        $totalBalance = $user->walletIncomesByKey();
+        $totalBalance = $user->income_balance;
         $lockedTrading = $user->getTradingLockedAmount();
         $availableBalance = round($totalBalance - $lockedTrading - 50, 2);
         if ($availableBalance < 0) {

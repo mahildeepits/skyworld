@@ -50,12 +50,7 @@ class ProcessDailyTradeProfit extends Command
                 if ($trade->base_amount > 0) {
                     $tradingBase = $trade->base_amount;
                 } else {
-                    $packagePrice = $agentCategory->unlock_balance;
-                    $pastTradeEarnings = \App\Models\UnifiedTransaction::where('user_id', $user->id)
-                        ->where('category', 'Trade Income')
-                        ->where('status', 'Completed')
-                        ->sum('amount');
-                    $tradingBase = round($packagePrice + $pastTradeEarnings, 2);
+                    $tradingBase = $user->walletIncomesByKey('deposits');
                 }
                 
                 // Calculate profit

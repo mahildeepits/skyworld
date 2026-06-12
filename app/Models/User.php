@@ -75,6 +75,7 @@ class User extends Authenticatable
         'yesterday_level_3_commission',
         'yesterday_locking_profit',
         'profile_image_url',
+        'income_balance',
     ];
 
     public static $panCardOption = [
@@ -136,6 +137,11 @@ class User extends Authenticatable
 
     public function user_address(){
         return $this->hasOne(UserAddress::class,'user_id','id');
+    }
+
+    public function registrationRequest()
+    {
+        return $this->hasOne(RegistrationRequest::class, 'user_id', 'id');
     }
 
     public function profile(){
@@ -428,6 +434,12 @@ class User extends Authenticatable
         }
 
         return $this->walletCache[$key] ?? 0;
+    }
+
+    public function getIncomeBalanceAttribute() {
+        $total = $this->walletIncomesByKey('totalIncome');
+        $deposits = $this->walletIncomesByKey('deposits');
+        return round($total - $deposits, 2);
     }
     public function todayAttendedTasks(){
         return $this->hasMany(AttendedTask::class,'user_id','id')->whereDate('created_at',\Carbon\Carbon::now()->format('Y-m-d'));

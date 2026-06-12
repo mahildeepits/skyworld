@@ -26,6 +26,13 @@ class WalletTransactionController extends Controller
         //                     ->orderBy('created_at', 'desc')
         //                     ->get();
         $userTransations =  \App\Models\UnifiedTransaction::where('user_id', authUser('member')->id)
+                            ->where(function($query) {
+                                $query->where('category', '!=', 'Deposit')
+                                      ->where(function($q) {
+                                          $q->where('category', '!=', 'Fund Transfer')
+                                            ->orWhere('transaction_type', '!=', 'Credit');
+                                      });
+                            })
                             ->orderBy('created_at', 'desc')
                             ->orderBy('id', 'desc')
                             ->get();
@@ -72,7 +79,7 @@ class WalletTransactionController extends Controller
         if ($type == 'transfer') {
             $request->validate([
                 'to_user' => 'required',
-                'amount' => 'required|numeric|min:1',
+                'amount' => 'required|numeric|min:10',
             ]);
             $skip_otp = ($request->has('skip_otp') && $request->skip_otp == 1) ? true : false;
             
@@ -104,15 +111,15 @@ class WalletTransactionController extends Controller
 
             // 4. Verify Active Level Reserve & Transferable Balance
             $activeCategory = $user->agentCategory();
-            $reserveAmount = $activeCategory ? $activeCategory->unlock_balance : 0;
-            $totalBalance = $user->walletIncomesByKey('totalIncome');
-            $availableBalance = max(0, $totalBalance - $reserveAmount);
+            $reserveAmount = 0;
+            $totalBalance = $user->income_balance;
+            $availableBalance = $totalBalance;
 
             if ($amount > $availableBalance) {
                 return response()->json([
                     'errors' => [
                         'amount' => [
-                            "Insufficient transferable balance. Your level reserve of $" . number_format($reserveAmount, 2) . " is locked. You can only transfer up to $" . number_format($availableBalance, 2) . "."
+                            "Insufficient transferable balance. You can only transfer up to $" . number_format($availableBalance, 2) . "."
                         ]
                     ]
                 ], 422);
@@ -217,14 +224,14 @@ class WalletTransactionController extends Controller
 
 
         $activeCategory = $user->agentCategory();
-        $reserveAmount = $activeCategory ? $activeCategory->unlock_balance : 0;
-        $totalBalance = $user->walletIncomesByKey('totalIncome');
-        $transferable = max(0, $totalBalance - $reserveAmount);
+        $reserveAmount = 0;
+        $totalBalance = $user->income_balance;
+        $transferable = $totalBalance;
 
         if ($request->isMethod('post')) {
             $request->validate([
                 'to_user' => 'required',
-                'amount' => 'required|numeric|min:1',
+                'amount' => 'required|numeric|min:10',
             ]);
 
             $skip_otp = ($request->has('skip_otp') && $request->skip_otp == 1) ? true : false;
@@ -258,7 +265,7 @@ class WalletTransactionController extends Controller
                 return response()->json([
                     'errors' => [
                         'amount' => [
-                            "Insufficient transferable balance. Your level reserve of $" . number_format($reserveAmount, 2) . " is locked. You can only transfer up to $" . number_format($transferable, 2) . "."
+                            "Insufficient transferable balance. You can only transfer up to $" . number_format($transferable, 2) . "."
                         ]
                     ]
                 ], 422);

@@ -120,6 +120,9 @@
                                             <a target="_blank" href="{{ route('admin.edit.user',['member_id'=>$user->member_id]) }}" class="btn btn-info btn-sm">Edit</a>
                                             <a href="javascript:void(0)" onclick="commanModel(`{{route('admin.setpaid.form',$user->id)}}`,'Add Wallet Balance')" class="btn btn-main btn-sm">Add Balance</a>
                                             <a href="{{ route('admin.users',['kyc_details'=>$user->id]) }}" class="btn btn-warning btn-sm" title="View KYC">KYC</a>
+                                            @if($user->registrationRequest && $user->registrationRequest->receipt)
+                                                <a href="{{ asset('images/receipts/' . $user->registrationRequest->receipt) }}" target="_blank" class="btn btn-secondary btn-sm" title="View Deposit Receipt">Receipt</a>
+                                            @endif
                                             {{-- 
                                             @if($user->is_blocked)
                                                 <a href="{{ route('admin.users',['unblock_user'=>$user->id]) }}" class="btn btn-danger btn-xs">Un-Block</a>

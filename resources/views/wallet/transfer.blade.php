@@ -26,10 +26,9 @@ $user = authUser();
                             <div class="col-12">
                                 <div class="form-group my-2">
                                     <label for="amount">Amount (USDT) <span class="text-danger">*</span></label>
-                                    <input type="number" name="amount" class="form-control" id="amount" placeholder="0.00" required step="0.01" max="{{ $transferable }}" min="1">
+                                    <input type="number" name="amount" class="form-control" id="amount" placeholder="0.00" required step="0.01" max="{{ $transferable }}" min="10">
                                     <div class="d-flex flex-column mt-1 text-muted small">
                                         <span>Available Balance: <b>${{ number_format($totalBalance, 2) }}</b></span>
-                                        <span>Locked Level Reserve ({{ $activeCategory ? $activeCategory->name : 'None' }}): <b>${{ number_format($reserveAmount, 2) }}</b></span>
                                         <strong>Transferable Balance: <span class="text-success">${{ number_format($transferable, 2) }}</span></strong>
                                     </div>
                                     <div class="invalid-feedback"></div>
@@ -72,16 +71,16 @@ $user = authUser();
 
                             </div>
 
-                            @if($transferable < 1)
+                            @if($transferable < 10)
                                 <div class="col-12 mt-3">
                                     <div class="alert alert-warning border-0 small mb-0">
-                                        Insufficient transferable balance. Minimum $1 above your package reserve (${{ number_format($reserveAmount, 2) }}) is required to transfer.
+                                        Insufficient transferable balance. Minimum $10 is required to transfer.
                                     </div>
                                 </div>
                             @endif
 
                             <div class="col-12 mt-3">
-                                <button type="submit" class="btn btn-main w-100 text-white" {{ $transferable < 1 ? 'disabled' : '' }}>Confirm Transfer</button>
+                                <button type="submit" class="btn btn-main w-100 text-white" {{ $transferable < 10 ? 'disabled' : '' }}>Confirm Transfer</button>
                             </div>
 
                             <div class="col-12 mt-3" >

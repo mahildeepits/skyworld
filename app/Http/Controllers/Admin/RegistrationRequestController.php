@@ -13,6 +13,7 @@ use App\Models\UserAgentCategory;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Helpers\RewardHelper;
+use App\Models\AgentCategory;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AccountApprovedEmail;
 use App\Mail\AccountRejectedEmail;
@@ -24,15 +25,21 @@ class RegistrationRequestController extends Controller
         $requests = RegistrationRequest::with('user', 'agentCategory')
                         ->orderBy('id', 'desc')
                         ->paginate(20);
-        return view('admin.registration-requests.index', compact('requests'));
+        $categories = AgentCategory::all();
+        return view('admin.registration-requests.index', compact('requests', 'categories'));
     }
 
-    public function approve($id)
+    public function approve(Request $request, $id)
     {
         $req = RegistrationRequest::findOrFail($id);
         if ($req->status != 'pending') {
             return back()->withErrors(['error' => 'Request is already processed.']);
         }
+
+        $request->validate([
+            'deposit_amount' => 'nullable|numeric|min:0',
+            'agent_category_id' => 'nullable|exists:agent_categories,id',
+        ]);
 
         DB::beginTransaction();
         try {
@@ -43,25 +50,31 @@ class RegistrationRequestController extends Controller
             $userModel->user_icon = 'userpaid.png';
             $userModel->save();
 
+            // Read inputs
+            $depositAmount = $request->input('deposit_amount', 0);
+            $agentCategoryId = $request->input('agent_category_id');
+
+            // Update registration request data
+            $req->deposit_amount = $depositAmount;
+            $req->agent_category_id = $agentCategoryId;
+
             // Assign Agent Category if present
-            if ($req->agent_category_id) {
+            if ($agentCategoryId) {
                 UserAgentCategory::create([
                     'user_id' => $userModel->id,
-                    'agent_category_id' => $req->agent_category_id,
+                    'agent_category_id' => $agentCategoryId,
                     'is_active' => 1,
                 ]);
             }
 
             // Add Deposit Amount if present
-            if ($req->deposit_amount > 0) {
-                $amount = $req->deposit_amount;
-                
+            if ($depositAmount > 0) {
                 $transaction = Transaction::create([
                     'user_id'          => $userModel->id,
                     'type'             => 'deposit',
-                    'amount'           => $amount,
+                    'amount'           => $depositAmount,
                     'transaction_fees' => 0,
-                    'net_amount'       => $amount,
+                    'net_amount'       => $depositAmount,
                     'status'           => 'success',
                     'wallet_address'   => 'System',
                 ]);
@@ -70,15 +83,15 @@ class RegistrationRequestController extends Controller
                     'user_id'     => $userModel->id,
                     'type'        => 'deposit',
                     'keyword'     => 'Transaction',
-                    'amount'      => $amount,
-                    'net_amount'  => $amount,
+                    'amount'      => $depositAmount,
+                    'net_amount'  => $depositAmount,
                     'related_id'  => $transaction->id,
                     'remark'      => 'Initial Deposit at Registration Approval',
                 ]);
 
                 UnifiedTransaction::create([
                     'user_id'          => $userModel->id,
-                    'amount'           => $amount,
+                    'amount'           => $depositAmount,
                     'transaction_type' => 'Credit',
                     'category'         => 'Deposit',
                     'status'           => 'Completed',
@@ -88,9 +101,6 @@ class RegistrationRequestController extends Controller
 
             // Give rewards if applicable
             if ($userModel->sponsor_id != 'Company') {
-                // RewardHelper::giveRewards() normally uses session data or current logged in user logic.
-                // It might need context, but let's assume it relies on recent registrations.
-                // To be safe we will just call it as AuthController did.
                 RewardHelper::giveRewards();
             }
 
@@ -100,8 +110,8 @@ class RegistrationRequestController extends Controller
             DB::commit();
 
             try {
+                $req->load('agentCategory'); // Reload relationship to get correct name if changed
                 $packageName = $req->agentCategory ? $req->agentCategory->name : 'N/A';
-                $depositAmount = $req->deposit_amount ?? 0;
                 Mail::to($userModel->email)->send(new AccountApprovedEmail($userModel, $depositAmount, $packageName));
             } catch (\Exception $e) {
                 // Ignore mail failures

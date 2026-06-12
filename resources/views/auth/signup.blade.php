@@ -15,7 +15,7 @@
         </div>
     @endif
 
-    {!! Form::open(['route'=>'register','class'=>'pt-3','method'=>'POST']) !!}
+    {!! Form::open(['route'=>'register','class'=>'pt-3','method'=>'POST','files'=>true]) !!}
         {!! Form::hidden('parent_id',request()->parent) !!}
         
         @php
@@ -154,6 +154,21 @@
                         {!! Form::number('deposit_amount', null, ['class'=>'form-control','placeholder'=>'Enter Deposit Amount*','step'=>'0.01','min'=>'0']) !!}
                     </div>
                     @error('deposit_amount')
+                        <span class="text-danger text-info">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="text-white-50 small mb-1 d-block" style="padding-left: 2px;">Upload Deposit Receipt / Screenshot (Screenshots/Images only)*</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="icon-camera"></i></span>
+                        </div>
+                        {!! Form::file('receipt', ['class'=>'form-control','accept'=>'image/*','required'=>true]) !!}
+                    </div>
+                    @error('receipt')
                         <span class="text-danger text-info">{{ $message }}</span>
                     @enderror
                 </div>

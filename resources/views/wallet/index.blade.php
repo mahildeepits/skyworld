@@ -108,7 +108,7 @@
     $unsettledROI = $user->getCurrentMonthAccumulatedROI();
     $unsettledLevelROI = $user->getCurrentMonthAccumulatedLevelROI();
     $totalUnsettled = $unsettledROI + $unsettledLevelROI;
-    $availableBalance = ($user->walletIncomesByKey('totalIncome') ?? 0) + $totalUnsettled;
+    $availableBalance = ($user->income_balance ?? 0);
     $myIncome = ($user->walletIncomesByKey('myIncome') ?? 0) + $totalUnsettled;
 @endphp
 <x-page-breadcrumb current-page='Wallet' sub-menu='Transactions' />
@@ -122,7 +122,7 @@
                 <p class="wallet-label mb-1">Available Balance</p>
                 <h1 class="wallet-balance">${{ number_format($availableBalance, 2) }}</h1>
                 @if($totalUnsettled > 0)
-                    <small class="text-white-50 d-block mt-n2 mb-3" style="font-size: 0.78rem;"><i class="icon-info"></i> Includes ${{ number_format($totalUnsettled, 2) }} unsettled monthly ROI & Level commissions</small>
+                    <small class="text-white-50 d-block mt-n2 mb-3" style="font-size: 0.78rem;"><i class="icon-info"></i> Unsettled ROI & IB Income: ${{ number_format($totalUnsettled, 2) }} (available after monthly settlement)</small>
                 @endif
                 <!-- <div class="d-flex gap-2">
                     <a href="{{ route('wallet.transfer') }}" class="btn btn-light btn-sm rounded-pill px-3 fw-bold">
@@ -135,13 +135,9 @@
             </div>
             <div class="col-12 col-md-6">
                 <div class="stats-grid">
-                    <div class="stat-pill">
+                    <div class="stat-pill" style="grid-column: span 2;">
                         <small>Total Income</small>
                         <span class="text-white">${{ number_format($myIncome, 2) }}</span>
-                    </div>
-                    <div class="stat-pill">
-                        <small>Total Deposits</small>
-                        <span class="text-white text-info text-success-light">${{ number_format($user->walletIncomesByKey('deposits'), 2) }}</span>
                     </div>
                     <div class="stat-pill">
                         <small>Total Withdrawals</small>

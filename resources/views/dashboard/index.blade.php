@@ -246,7 +246,9 @@
   $walletIncomes = $user->walletIncomesByKey('all');
   $unsettledROI = $user->getCurrentMonthAccumulatedROI();
   $unsettledLevelROI = $user->getCurrentMonthAccumulatedLevelROI();
-  $walletAmount = ($user->walletIncomesByKey('totalIncome') ?? 0) + $unsettledROI + $unsettledLevelROI;
+  $availableBalance = ($user->income_balance ?? 0);
+  $totalUnsettled = $unsettledROI + $unsettledLevelROI;
+  $depositedAmount = $user->walletIncomesByKey('deposits') ?? 0;
   $lockedBalance = $user->lockedStakings()->sum('amount') ?? 0;
   
   $loginCount = $user->checkIns->count();
@@ -417,7 +419,10 @@
           <i class="icon-wallet" style="font-size: 1rem;"></i>
         </div>
         <p class="db-stat-label" style="font-size: 0.65rem;">USDT Balance</p>
-        <h3 class="db-stat-value" style="font-size: 1.2rem;">${{ number_format($walletAmount, 2) }}</h3>
+        <h3 class="db-stat-value" style="font-size: 1.2rem;">${{ number_format($availableBalance, 2) }}</h3>
+        @if($totalUnsettled > 0)
+          <p class="db-stat-sub text-muted mt-1" style="font-size: 0.65rem; line-height: 1;">Unsettled: ${{ number_format($totalUnsettled, 2) }}</p>
+        @endif
       </div>
     </a>
   </div>
@@ -430,12 +435,13 @@
           <div class="db-stat-icon" style="background: rgba(0,226,251,0.1); color: #00e2fb; width: 35px; height: 35px;">
             <i class="icon-badge" style="font-size: 1rem;"></i>
           </div>
-          @if($nextLevel && $walletAmount >= $nextLevel->unlock_balance)
+          @if($nextLevel && $depositedAmount >= $nextLevel->unlock_balance)
             <a href="{{ route('upgrade.package', encrypt($nextLevel->id)) }}" class="btn btn-sm btn-primary" style="font-size: 0.65rem; padding: 0.4rem!important;">Upgrade Now</a>
           @endif
         </div>
         <p class="db-stat-label" style="font-size: 0.65rem;">My Level</p>
         <h3 class="db-stat-value" style="font-size: 1.2rem;" title="{{ $currentLevel->name ?? 'N/A' }}">{{ $currentLevel->name ?? 'N/A' }}</h3>
+        <p class="db-stat-sub text-muted mt-1" style="font-size: 0.72rem; line-height: 1;">Deposit: ${{ number_format($depositedAmount, 2) }}</p>
       </div>
     </a>
   </div>
@@ -647,11 +653,11 @@
       <div class="swiper-wrapper">
         @foreach($agentCategories as $category)
           @php
-            $balanceProgress = $category->unlock_balance > 0 ? min(100, round(($walletAmount / $category->unlock_balance) * 100, 0)) : 100;
+            $balanceProgress = $category->unlock_balance > 0 ? min(100, round(($depositedAmount / $category->unlock_balance) * 100, 0)) : 100;
             $teamAProgress = ($category->team_a ?? 0) > 0 ? min(100, round(($teamACount / $category->team_a) * 100, 0)) : 100;
             $teamBCProgress = ($category->team_b_c ?? 0) > 0 ? min(100, round(($teamBCCount / $category->team_b_c) * 100, 0)) : 100;
             
-            $isUnlocked = ($walletAmount >= $category->unlock_balance) && 
+            $isUnlocked = ($depositedAmount >= $category->unlock_balance) && 
                           ($teamACount >= ($category->team_a ?? 0)) && 
                           ($teamBCCount >= ($category->team_b_c ?? 0));
           @endphp

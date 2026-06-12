@@ -72,7 +72,7 @@ class PinController extends Controller
             /* Get joining kit */
             $joiningKit = JoiningKit::find($request->joining_kit_id);
             /* Check if User have enough money for Topup */
-            $walletIncome = $authUser?->walletIncomesByKey() ?? 0;
+            $walletIncome = $authUser?->income_balance ?? 0;
             // dd($isPinsAvailable->count() >= 1);
             if($walletIncome >= $joiningKit->amount) {
                 /* Check if any pin is Available which is not used */

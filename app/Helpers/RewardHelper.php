@@ -678,7 +678,7 @@ class RewardHelper
     }
     public static function checkPackageEligibility($user, $category)
     {
-        $walletAmount = $user->walletIncomesByKey('totalIncome');
+        $walletAmount = $user->walletIncomesByKey('deposits');
         
         $teamACount = $user->allChildMembers->where('is_paid', 1)->count();
         $totalPaidDownline = $user->allPiadChildsExceptSelf()->count();
@@ -792,9 +792,9 @@ class RewardHelper
                         'from_user_id'     => $childUser->id,
                         'amount'           => $levelIncome,
                         'transaction_type' => 'Credit',
-                        'category'         => 'Level ' . $level . ' ROI Income',
+                        'category'         => 'Level ' . $level . ' Income',
                         'status'           => 'Completed',
-                        'description'      => 'Level ' . $level . ' ROI Income from ' . $childUser->member_id,
+                        'description'      => 'Level ' . $level . ' Income from ' . $childUser->member_id,
                     ]);
                 }
             }
