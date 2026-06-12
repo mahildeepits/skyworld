@@ -9,6 +9,8 @@ We are pleased to inform you that your registration request has been approved an
 **Account Details:**
 - **User ID:** {{ $user->member_id }}
 - **Name:** {{ $user->name }}
+- **Deposit Amount:** ${{ number_format($depositAmount, 2) }}
+- **Package:** {{ $packageName }}
 </x-mail::panel>
 
 You can now log in to your dashboard to access all features.

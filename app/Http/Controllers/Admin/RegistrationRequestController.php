@@ -100,7 +100,9 @@ class RegistrationRequestController extends Controller
             DB::commit();
 
             try {
-                Mail::to($userModel->email)->send(new AccountApprovedEmail($userModel));
+                $packageName = $req->agentCategory ? $req->agentCategory->name : 'N/A';
+                $depositAmount = $req->deposit_amount ?? 0;
+                Mail::to($userModel->email)->send(new AccountApprovedEmail($userModel, $depositAmount, $packageName));
             } catch (\Exception $e) {
                 // Ignore mail failures
             }

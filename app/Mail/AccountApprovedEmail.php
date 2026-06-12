@@ -14,13 +14,17 @@ class AccountApprovedEmail extends Mailable
     use Queueable, SerializesModels;
 
     public $user;
+    public $depositAmount;
+    public $packageName;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($user)
+    public function __construct($user, $depositAmount = 0, $packageName = 'N/A')
     {
         $this->user = $user;
+        $this->depositAmount = $depositAmount;
+        $this->packageName = $packageName;
     }
 
     /**
