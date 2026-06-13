@@ -336,4 +336,51 @@ class DashboardController extends Controller
             return response()->json(['status' => false,'message' => 'Error processing request','code' => 400]);
         }
     }
+
+    public function resubmitRequest(Request $request) {
+        $user = \Auth::guard('member')->user();
+        
+        $request->validate([
+            'agent_category_id' => 'required|exists:agent_categories,id',
+            'deposit_amount' => 'required|numeric|min:0',
+            'receipt' => 'nullable|image|max:4096', // Max 4MB
+        ]);
+
+        $regRequest = \App\Models\RegistrationRequest::where('user_id', $user->id)->first();
+        if (!$regRequest) {
+            Session::flash('error', 'Error|No registration request found.');
+            return back();
+        }
+
+        if ($regRequest->status !== 'rejected') {
+            Session::flash('error', 'Error|Your request is not in rejected status.');
+            return back();
+        }
+
+        \DB::beginTransaction();
+        try {
+            // Handle receipt upload
+            $filename = $regRequest->receipt;
+            if ($request->hasFile('receipt')) {
+                $file = $request->file('receipt');
+                $filename = "receipt_" . time() . "_" . rand(11111111, 99999999) . "." . $file->getClientOriginalExtension();
+                $file->move('images/receipts/', $filename);
+            }
+
+            // Update request back to pending
+            $regRequest->agent_category_id = $request->agent_category_id;
+            $regRequest->deposit_amount = $request->deposit_amount;
+            $regRequest->receipt = $filename;
+            $regRequest->status = 'pending';
+            $regRequest->save();
+
+            \DB::commit();
+            Session::flash('success', 'Success|Registration request resubmitted successfully!');
+            return back();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            Session::flash('error', 'Error|Failed to resubmit request: ' . $e->getMessage());
+            return back();
+        }
+    }
 }

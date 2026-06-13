@@ -221,7 +221,6 @@ Route::group(['prefix' => 'member'], function () {
     Route::post('register', [AuthController::class, 'register'])->name('register');
     Route::post('register/send-otp', [AuthController::class, 'sendRegistrationOtp'])->name('register.send_otp');
     Route::post('register/verify-otp', [AuthController::class, 'verifyRegistrationOtp'])->name('register.verify_otp');
-
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('register/details', [AuthController::class, 'registerDetails'])->name('register.details');
 
@@ -232,6 +231,7 @@ Route::group(['prefix' => 'member'], function () {
             return redirect()->route('member.dashboard')->with('success', 'Success|Deposits Checked Successfully');
         })->name('track.deposit.cron');
         Route::get('dashboard', [DashboardController::class, 'index'])->name('member.dashboard');
+        Route::post('dashboard/resubmit-request', [DashboardController::class, 'resubmitRequest'])->name('member.register.resubmit.dashboard');
         Route::post('announcement/dismiss', [DashboardController::class, 'dismissAnnouncement'])->name('announcement.dismiss');
         Route::get('levels', [DashboardController::class, 'myLevels'])->name('member.levels');
         Route::get('explore/{id}/category', [DashboardController::class, 'exploreCategory'])->name('explore.category');

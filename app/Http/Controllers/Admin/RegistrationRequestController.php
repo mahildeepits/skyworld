@@ -134,11 +134,6 @@ class RegistrationRequestController extends Controller
         DB::beginTransaction();
         try {
             $userModel = $req->user;
-            if ($userModel) {
-                $userModel->is_blocked = 1;
-                $userModel->user_icon = 'blocked.png';
-                $userModel->save();
-            }
 
             $req->status = 'rejected';
             $req->save();

@@ -296,6 +296,7 @@
   $nextLevel = \App\Models\AgentCategory::where('unlock_balance', '>', $currentLevel->unlock_balance ?? 0)
       ->orderBy('unlock_balance', 'asc')
       ->first();
+  $rejectedRequest = \App\Models\RegistrationRequest::where('user_id', $user->id)->where('status', 'rejected')->first();
 @endphp
 
 {{-- ═══════════════ WELCOME BANNER ═══════════════ --}}
@@ -790,6 +791,74 @@
     </form>
   </div>
 </div>
+
+@if($rejectedRequest)
+  <!-- Floating Button for Resubmission -->
+  <button type="button" class="btn btn-warning rounded-circle position-fixed shadow-lg d-flex align-items-center justify-content-center" 
+          style="bottom: 80px; right: 30px; width: 60px; height: 60px; z-index: 9999; background: #ea580c; border: none; animation: pulse-fab 2s infinite;"
+          data-bs-toggle="modal" data-bs-target="#resubmitModal" data-toggle="modal" data-target="#resubmitModal" title="Resubmit Registration Request">
+    <i class="icon-action-redo text-white" style="font-size: 1.5rem; line-height: 1;"></i>
+  </button>
+
+  <style>
+    @keyframes pulse-fab {
+      0% {
+        box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 15px rgba(234, 88, 12, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(234, 88, 12, 0);
+      }
+    }
+    #resubmitModal {
+      z-index: 1150 !important;
+    }
+  </style>
+
+  <!-- Resubmit Modal -->
+  <div class="modal fade" id="resubmitModal" tabindex="-1" role="dialog" aria-labelledby="resubmitModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content shadow-lg" style="border: none; border-radius: 18px; overflow: hidden; background: #fff;">
+        <div class="modal-header border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
+          <h5 class="modal-title font-weight-bold" id="resubmitModalLabel" style="color: #0f172a;">Resubmit Registration Details</h5>
+          <button type="button" class="close border-0 bg-transparent" data-bs-dismiss="modal" data-dismiss="modal" onclick="$('#resubmitModal').modal('hide');" aria-label="Close" style="font-size: 1.5rem; color: #64748b;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="small text-muted mb-3">Your previous registration request was rejected by admin. Please update your details and submit again.</p>
+          
+          {!! Form::open(['route' => 'member.register.resubmit.dashboard', 'method' => 'POST', 'files' => true]) !!}
+            <div class="form-group mb-3">
+              <label class="small mb-1 d-block font-weight-bold" style="color: #64748b;">Select Package*</label>
+              @php
+                $categories = \App\Models\AgentCategory::pluck('name', 'id')->toArray();
+              @endphp
+              {!! Form::select('agent_category_id', $categories, $rejectedRequest->agent_category_id, ['class' => 'form-control', 'required' => true, 'placeholder' => 'Select Package*']) !!}
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="small mb-1 d-block font-weight-bold" style="color: #64748b;">Deposit Amount*</label>
+              {!! Form::number('deposit_amount', $rejectedRequest->deposit_amount, ['class' => 'form-control', 'required' => true, 'step' => '0.01', 'min' => '0', 'placeholder' => 'Deposit Amount*']) !!}
+            </div>
+
+            <div class="form-group mb-4">
+              <label class="small mb-1 d-block font-weight-bold" style="color: #64748b;">Upload Payment Receipt / Screenshot (Optional)</label>
+              {!! Form::file('receipt', ['class' => 'form-control', 'accept' => 'image/*']) !!}
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary px-4 py-2" style="border-radius: 10px;" data-bs-dismiss="modal" data-dismiss="modal" onclick="$('#resubmitModal').modal('hide');">Cancel</button>
+              <button type="submit" class="btn btn-main px-4 py-2" style="border-radius: 10px;">Resubmit Request</button>
+            </div>
+          {!! Form::close() !!}
+        </div>
+      </div>
+    </div>
+  </div>
+@endif
 @endsection
 
 @section('scripts')
