@@ -33,7 +33,7 @@ class RegisterRequest extends FormRequest
             'confirm_password' => 'required|same:password',
             'agent_category_id' => 'required|exists:agent_categories,id',
             'deposit_amount' => 'required|numeric|min:0',
-            'receipt' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'receipt' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
         ];
     }
 
@@ -48,7 +48,6 @@ class RegisterRequest extends FormRequest
             'mobile.unique' => 'This Mobile number is already registered',
             'email.unique' => 'This Email is already registered',
             'confirm_password.same' => 'Password does not match',
-            'receipt.required' => 'Deposit screenshot/receipt image is required',
             'receipt.image' => 'The receipt must be an image (screenshot)',
             'receipt.mimes' => 'The receipt must be a jpeg, png, jpg, gif, svg or webp image',
             'receipt.max' => 'The receipt size must not exceed 4MB',

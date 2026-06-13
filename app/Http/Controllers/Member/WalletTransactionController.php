@@ -281,8 +281,8 @@ class WalletTransactionController extends Controller
                 }
 
                 $amount = $request->amount;
-                $fee = round($amount * 0.05, 2);
-                $netAmount = round($amount - $fee, 2);
+                $fee = 0;
+                $netAmount = $amount;
 
                 $transfered = WalletTransaction::create([
                     'user_id'       => $user->member_id,
@@ -301,7 +301,7 @@ class WalletTransactionController extends Controller
                     'transaction_type' => 'Debit',
                     'category'         => 'Fund Transfer',
                     'status'           => 'Completed',
-                    'description'      => 'Transfer to user ' . $to_user . ' (Fee: $' . number_format($fee, 2) . ')',
+                    'description'      => 'Transfer to user ' . $to_user,
                 ]);
 
                 \App\Models\UnifiedTransaction::create([
@@ -311,7 +311,7 @@ class WalletTransactionController extends Controller
                     'transaction_type' => 'Credit',
                     'category'         => 'Fund Transfer',
                     'status'           => 'Completed',
-                    'description'      => 'Received from user ' . $user->member_id . ' (Transfer: $' . number_format($amount, 2) . ', Fee: $' . number_format($fee, 2) . ')',
+                    'description'      => 'Received from user ' . $user->member_id,
                 ]);
 
                 // Also create deposit transaction & tracking entries for the receiver so they are recorded as deposits
@@ -333,7 +333,7 @@ class WalletTransactionController extends Controller
                     'amount'      => $amount,
                     'net_amount'  => $netAmount,
                     'related_id'  => $depositTx->id,
-                    'remark'      => 'Deposit Amount received via Fund Transfer from ' . $user->member_id . ' (Fee: $' . $fee . ')',
+                    'remark'      => 'Deposit Amount received via Fund Transfer from ' . $user->member_id,
                 ]);
 
 

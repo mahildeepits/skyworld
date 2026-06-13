@@ -35,26 +35,7 @@ $user = authUser();
                                 </div>
                             </div>
 
-                            <div class="col-6">
-                                <div class="form-group my-0">
-                                    <p class="m-0 py-2"><b>Transfer Fee ( 5% )</b></p>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group my-0">
-                                    <input type="text" class="text-end form-control-plaintext py-2" style="font-weight: 600;" id="transfer_fee" value="$0.00" placeholder="$0.00" disabled>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group my-0">
-                                    <p class="m-0 py-2"><b>Receiver Will Receive</b></p>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group my-0">
-                                    <input type="text" class="text-end form-control-plaintext py-2" style="font-weight: 600;" value="$0.00" id="receiver_receive" placeholder="$0.00" disabled >
-                                </div>
-                            </div>
+
 
                             <!-- Verification Section -->
                             <div class="col-12 mt-3">
@@ -83,14 +64,7 @@ $user = authUser();
                                 <button type="submit" class="btn btn-main w-100 text-white" {{ $transferable < 10 ? 'disabled' : '' }}>Confirm Transfer</button>
                             </div>
 
-                            <div class="col-12 mt-3" >
-                                <ul class="p-3" style="list-style: none; font-weight:500; padding-inline-start: 0;border-radius: 10px;background-color: #b1b0f9d4;">
-                                    <li class="d-flex align-items-start">
-                                        <i class='bx bxs-error text-dark px-1' style="font-size:16px;"></i>
-                                        <p class="m-0 pt-1">Transfer Fee Deduction Is 5% on all transfers</p>
-                                    </li>
-                                </ul>
-                            </div>
+
                         </div>
                     </form>
                 </div>
@@ -107,14 +81,7 @@ $user = authUser();
 <script>
     $(document).ready(function(){
 
-        // Dynamic fee calculator
-        $(document).on('keyup input', '#amount', function() {
-            let amount = parseFloat($(this).val()) || 0;
-            let fee = (amount * 0.05).toFixed(2);
-            let net = (amount - fee).toFixed(2);
-            $('#transfer_fee').val('$' + fee);
-            $('#receiver_receive').val('$' + net);
-        });
+
 
         $('#send-otp-btn').on('click', function() {
             let btn = $(this);

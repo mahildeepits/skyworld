@@ -313,6 +313,7 @@ class TransactionsService{
         $validator = Validator::make($request->all(),[
             'paid_from_address' => 'required',
             'type' => 'required',
+            'receipt' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
         ]);
         if($validator->fails()){
             return response()->json(['errors' => $validator->errors()], 422);
@@ -320,13 +321,48 @@ class TransactionsService{
         $user = authUser();
         $data = $request->only('transaction_hash','type','paid_from_address');
         $data['user_id'] = $user->id;
+
+        DB::beginTransaction();
         try {
+            $filename = null;
+            if ($request->hasFile('receipt')) {
+                $file = $request->file('receipt');
+                $filename = "receipt_" . time() . "_" . rand(11111111, 99999999) . "." . $file->getClientOriginalExtension();
+                $file->move('images/receipts/', $filename);
+            }
+
+            // Find the registration request for this user and update it with the receipt
+            $regRequest = \App\Models\RegistrationRequest::where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->first();
+            
+            if (!$regRequest) {
+                // Check for any other existing registration request for this user
+                $regRequest = \App\Models\RegistrationRequest::where('user_id', $user->id)
+                    ->orderBy('id', 'desc')
+                    ->first();
+            }
+
+            if ($regRequest) {
+                $regRequest->receipt = $filename;
+                $regRequest->save();
+            } else {
+                // Create a pending request if none exists
+                \App\Models\RegistrationRequest::create([
+                    'user_id' => $user->id,
+                    'receipt' => $filename,
+                    'status' => 'pending',
+                ]);
+            }
+
             $transaction = DepositsTracking::create($data);
             if($transaction){
-                return response()->json(['status' => true,'message' => 'Transaction added successfully','refresh' => true,'code' => 200]);
+                DB::commit();
+                return response()->json(['status' => true,'message' => 'Deposit receipt and details submitted successfully!','refresh' => true,'code' => 200]);
             }
             throw new \Exception("Error Processing Request", 1);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['status' => false,'message' => $th->getMessage(),'code' => 400]);
         }
     }

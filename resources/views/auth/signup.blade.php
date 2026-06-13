@@ -161,12 +161,12 @@
 
             <div class="col-md-12">
                 <div class="form-group">
-                    <label class="text-white-50 small mb-1 d-block" style="padding-left: 2px;">Upload Deposit Receipt / Screenshot (Screenshots/Images only)*</label>
+                    <label class="text-white-50 small mb-1 d-block" style="padding-left: 2px;">Upload Deposit Receipt / Screenshot (Screenshots/Images only) (Optional)</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="icon-camera"></i></span>
                         </div>
-                        {!! Form::file('receipt', ['class'=>'form-control','accept'=>'image/*','required'=>true]) !!}
+                        {!! Form::file('receipt', ['class'=>'form-control','accept'=>'image/*']) !!}
                     </div>
                     @error('receipt')
                         <span class="text-danger text-info">{{ $message }}</span>

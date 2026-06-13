@@ -21,7 +21,7 @@
                             <p class="mb-2" style="word-break: break-all; font-weight: bold; color: #d9534f;">{{ getWalletAddress(authUser(), $type) ?: 'No address registered' }}</p>
                             <small class="d-block" style="font-size: 12px;">If you use a different address, please specify it below during submission to ensure tracking.</small>
                         </div> -->
-                        <form action="{{route('wallet.deposit')}}" method="post" onsubmit="ajaxFormSubmit($(this))">
+                        <form action="{{route('wallet.deposit')}}" method="post" enctype="multipart/form-data" onsubmit="ajaxFormSubmit($(this))">
                             @csrf
                             <div class="row">
                                 <div class="col-12">
@@ -64,21 +64,35 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <div style="width:fit-content; background:#fff; border-radius: 10px; padding: 10px; justify-self: center; box-shadow: 0px 0px 10px rgba(0,0,0,0.3);">
+                                <div class="col-12 text-center my-3">
+                                    <div style="width:fit-content; background:#fff; border-radius: 10px; padding: 10px; margin: 0 auto; box-shadow: 0px 0px 10px rgba(0,0,0,0.3);">
                                         {!! $qrCode !!}
                                     </div>
                                 </div>
-                                <!-- <div class="col-12">
+                                <div class="col-12">
                                     <div class="form-group mb-2">
                                         <label for="paid_from_address" class="my-2">Wallet Address You Paid From <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <input type="text" name="paid_from_address" id="paid_from_address" class="form-control" placeholder="Enter the wallet address you sent funds from" required>
-                                            <button class="btn btn-main text-white" type="submit">Submit</button>
-                                        </div>
+                                        <input type="text" name="paid_from_address" id="paid_from_address" class="form-control" placeholder="Enter the wallet address you sent funds from" required>
                                         <div class="invalid-feedback"></div>
                                     </div>
-                                </div> -->
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-2">
+                                        <label for="transaction_hash" class="my-2">Transaction Hash / TxID (Optional)</label>
+                                        <input type="text" name="transaction_hash" id="transaction_hash" class="form-control" placeholder="Enter transaction hash (TxID) if available">
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label for="receipt" class="my-2">Upload Deposit Screenshot / Receipt Proof <span class="text-danger">*</span></label>
+                                        <input type="file" name="receipt" id="receipt" class="form-control" accept="image/*" required>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <button class="btn btn-main text-white w-100 py-2" type="submit">Submit Deposit Proof</button>
+                                </div>
                                 
                             </div>
                         </form>
