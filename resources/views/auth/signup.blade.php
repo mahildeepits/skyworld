@@ -159,7 +159,7 @@
                 </div>
             </div>
 
-            <div class="col-md-12">
+            <!-- <div class="col-md-12">
                 <div class="form-group">
                     <label class="text-white-50 small mb-1 d-block" style="padding-left: 2px;">Upload Deposit Receipt / Screenshot (Screenshots/Images only) (Optional)</label>
                     <div class="input-group">
@@ -172,7 +172,7 @@
                         <span class="text-danger text-info">{{ $message }}</span>
                     @enderror
                 </div>
-            </div>
+            </div> -->
         </div>
         
         <div class="mb-4">
