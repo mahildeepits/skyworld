@@ -122,15 +122,15 @@
         <span class="menu-title">Withdrawal</span>
       </a>
     </li>
-    <!-- @if(!in_array(authUser()->member_id, ['Company','company'])) -->
-      
-    <!-- @endif -->
-    <!-- <li class="nav-item {{ Route::is('wallet.transfer') ? 'active' : '' }}">
-      <a class="nav-link" href="{{ route('wallet.transfer') }}">
-        <i class="icon-shuffle menu-icon"></i>
-        <span class="menu-title">Transfer</span>
-      </a>
-    </li> -->
+    @if(!in_array(authUser()->member_id, ['Company','company']))
+      <li class="nav-item {{ Route::is('wallet.transfer') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('wallet.transfer') }}">
+          <i class="icon-shuffle menu-icon"></i>
+          <span class="menu-title">Transfer</span>
+        </a>
+      </li>  
+    @endif
+    
     <!-- <li class="nav-item {{ Route::is('member.locking') ? 'active' : '' }}">
       <a class="nav-link" href="{{ route('member.locking') }}">
         <i class="icon-lock menu-icon"></i>
