@@ -221,17 +221,18 @@ class WalletTransactionController extends Controller
             abort(403, 'User Not Found');
         }
 
-
-
         $activeCategory = $user->agentCategory();
         $reserveAmount = 0;
         $totalBalance = $user->income_balance;
+        $roiBalance = $user->getROIBalance();
+        $ibBalance = $user->getIBBalance();
         $transferable = $totalBalance;
 
         if ($request->isMethod('post')) {
             $request->validate([
                 'to_user' => 'required',
                 'amount' => 'required|numeric|min:10',
+                'income_type' => 'required|in:roi,ib',
             ]);
 
             $skip_otp = ($request->has('skip_otp') && $request->skip_otp == 1) ? true : false;
@@ -260,12 +261,15 @@ class WalletTransactionController extends Controller
                 return response()->json(['errors' => ['to_user' => ['You can only transfer funds to users in your downline.']]], 422);
             }
 
-            // 4. Verify Transferable Balance
-            if ($request->amount > $transferable) {
+            // 4. Verify Transferable Balance for specific wallet type
+            $incomeType = $request->income_type;
+            $availableBalance = ($incomeType === 'roi') ? $user->getROIBalance() : $user->getIBBalance();
+
+            if ($request->amount > $availableBalance) {
                 return response()->json([
                     'errors' => [
                         'amount' => [
-                            "Insufficient transferable balance. You can only transfer up to $" . number_format($transferable, 2) . "."
+                            "Insufficient transferable balance. You can only transfer up to $" . number_format($availableBalance, 2) . " from the selected wallet."
                         ]
                     ]
                 ], 422);
@@ -286,7 +290,7 @@ class WalletTransactionController extends Controller
 
                 $transfered = WalletTransaction::create([
                     'user_id'       => $user->member_id,
-                    'keyword'       => 'transfer',
+                    'keyword'       => 'transfer_' . $incomeType,
                     'transfered_to' => $transferedUser->member_id,
                     'amount'        => $amount,
                 ]);
@@ -295,13 +299,16 @@ class WalletTransactionController extends Controller
                     'net_amount'    => $netAmount,
                 ]);
 
+                $categoryName = ($incomeType === 'roi') ? 'Transfer - Profit' : 'Transfer - IB';
+                $descriptionName = 'Transfer to user ' . $to_user . ' from ' . ($incomeType === 'roi' ? 'Profit' : 'IB') . ' Wallet';
+
                 \App\Models\UnifiedTransaction::create([
                     'user_id'          => $user->id,
                     'amount'           => $amount,
                     'transaction_type' => 'Debit',
-                    'category'         => 'Fund Transfer',
+                    'category'         => $categoryName,
                     'status'           => 'Completed',
-                    'description'      => 'Transfer to user ' . $to_user,
+                    'description'      => $descriptionName,
                 ]);
 
                 \App\Models\UnifiedTransaction::create([
@@ -438,6 +445,6 @@ class WalletTransactionController extends Controller
             }
         }
 
-        return view('wallet.transfer', compact('user', 'transferable', 'reserveAmount', 'totalBalance', 'activeCategory'));
+        return view('wallet.transfer', compact('user', 'transferable', 'reserveAmount', 'totalBalance', 'activeCategory', 'roiBalance', 'ibBalance'));
     }
 }

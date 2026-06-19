@@ -25,17 +25,27 @@ $user = authUser();
 
                             <div class="col-12">
                                 <div class="form-group my-2">
-                                    <label for="amount">Amount (USDT) <span class="text-danger">*</span></label>
-                                    <input type="number" name="amount" class="form-control" id="amount" placeholder="0.00" required step="0.01" max="{{ $transferable }}" min="10">
+                                    <label class="form-label mb-2 font-weight-bold text-dark">Select Wallet <span class="text-danger">*</span></label>
+                                    <select name="income_type" id="income_type" class="form-control" style="font-weight: 600;">
+                                        <option value="roi">Profit Wallet (Available: {{ number_format($roiBalance ?? 0, 2) }} USDT)</option>
+                                        <option value="ib">IB Wallet (Available: {{ number_format($ibBalance ?? 0, 2) }} USDT)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group my-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label for="amount" class="font-weight-bold mb-0">Amount (USDT) <span class="text-danger">*</span></label>
+                                        <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2" id="max-amount-btn" style="font-size: 0.72rem; border-radius: 4px; line-height: 1.5;">Use Max</button>
+                                    </div>
+                                    <input type="number" name="amount" class="form-control" id="amount" placeholder="0.00" required step="0.01" min="10" style="font-weight: 600;">
                                     <div class="d-flex flex-column mt-1 text-muted small">
-                                        <span>Available Balance: <b>${{ number_format($totalBalance, 2) }}</b></span>
-                                        <strong>Transferable Balance: <span class="text-success">${{ number_format($transferable, 2) }}</span></strong>
+                                        <span>Available Balance: <b id="display-available-balance">{{ number_format($roiBalance ?? 0, 2) }} USDT</b></span>
                                     </div>
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
-
-
 
                             <!-- Verification Section -->
                             <div class="col-12 mt-3">
@@ -48,23 +58,17 @@ $user = authUser();
                                     </div>
                                     <div class="invalid-feedback"></div>
                                 </div>
-                                
-
                             </div>
 
-                            @if($transferable < 10)
-                                <div class="col-12 mt-3">
-                                    <div class="alert alert-warning border-0 small mb-0">
-                                        Insufficient transferable balance. Minimum $10 is required to transfer.
-                                    </div>
+                            <div class="col-12 mt-3 d-none" id="insufficient-balance-alert">
+                                <div class="alert alert-warning border-0 small mb-0">
+                                    Insufficient transferable balance. Minimum $10 is required to transfer.
                                 </div>
-                            @endif
+                            </div>
 
                             <div class="col-12 mt-3">
-                                <button type="submit" class="btn btn-main w-100 text-white" {{ $transferable < 10 ? 'disabled' : '' }}>Confirm Transfer</button>
+                                <button type="submit" class="btn btn-main w-100 text-white" id="confirm-btn">Confirm Transfer</button>
                             </div>
-
-
                         </div>
                     </form>
                 </div>
@@ -80,8 +84,39 @@ $user = authUser();
 @section('scripts')
 <script>
     $(document).ready(function(){
+        let balances = {
+            'roi': parseFloat("{{ $roiBalance ?? 0 }}") || 0,
+            'ib': parseFloat("{{ $ibBalance ?? 0 }}") || 0
+        };
 
+        function updateAvailableBalance() {
+            let type = $('#income_type').val();
+            let available = balances[type];
+            $('#display-available-balance').text(available.toFixed(2) + ' USDT');
+            $('#amount').attr('max', available);
 
+            if (available < 10) {
+                $('#insufficient-balance-alert').removeClass('d-none');
+                $('#confirm-btn').prop('disabled', true);
+            } else {
+                $('#insufficient-balance-alert').addClass('d-none');
+                $('#confirm-btn').prop('disabled', false);
+            }
+        }
+
+        $(document).on('change', '#income_type', function() {
+            updateAvailableBalance();
+            $('#amount').val('');
+        });
+
+        $(document).on('click', '#max-amount-btn', function() {
+            let type = $('#income_type').val();
+            let available = balances[type];
+            $('#amount').val(available);
+        });
+
+        // Initialize state on load
+        updateAvailableBalance();
 
         $('#send-otp-btn').on('click', function() {
             let btn = $(this);
@@ -131,10 +166,19 @@ $user = authUser();
 
         $('#transfer-form').on('submit', function(e){
             e.preventDefault();
+            let amount = parseFloat($('#amount').val()) || 0;
+            if (amount < 10) {
+                alert('The minimum transfer amount is 10 USDT.');
+                return false;
+            }
+            let type = $('#income_type').val();
+            let available = balances[type];
+            if (amount > available) {
+                alert('Insufficient balance in the selected wallet.');
+                return false;
+            }
             ajaxFormSubmit($(this)); 
         });
     });
-
-
 </script>
 @endsection

@@ -388,7 +388,7 @@ class User extends Authenticatable
             $bonusIncome    = $allTrans->where('category', 'Bonus Income')->sum('amount');
             $tradeIncome    = $allTrans->where('category', 'Trade Income')->sum('amount');
             $ambasdor       = $allTrans->where('category', 'Ambassador Income')->sum('amount');
-            $roiIncome      = $allTrans->where('category', 'Daily ROI Income')->sum('amount');
+            $roiIncome      = $allTrans->whereIn('category', ['Daily ROI Income', 'Daily Profit Income'])->sum('amount');
             
             $stakingUnlocked = $allTrans->where('category', 'Staking Return')->sum('amount');
             $withdrawls     = $allTrans->where('category', 'Withdrawal')
@@ -740,7 +740,7 @@ class User extends Authenticatable
             ->sum('amount');
 
         $roiWithdrawals = (float) $this->unifiedTransactions()
-            ->where('category', 'Withdrawal - Profit')
+            ->whereIn('category', ['Withdrawal - Profit', 'Withdrawal - Progit', 'Transfer - Profit'])
             ->whereIn('status', ['Completed', 'success', 'Pending'])
             ->sum('amount');
 
@@ -766,7 +766,7 @@ class User extends Authenticatable
             ->sum('amount');
 
         $ibWithdrawals = (float) $this->unifiedTransactions()
-            ->where('category', 'Withdrawal - IB')
+            ->whereIn('category', ['Withdrawal - IB', 'Transfer - IB'])
             ->whereIn('status', ['Completed', 'success', 'Pending'])
             ->sum('amount');
 

@@ -127,7 +127,7 @@ class BinaryTreeController extends Controller
 
         $transactionsQuery = \App\Models\UnifiedTransaction::whereIn('user_id', $userIds)
             ->where(function ($query) {
-                $query->where('category', 'Daily ROI Income')
+                $query->whereIn('category', ['Daily ROI Income', 'Daily Profit Income'])
                       ->orWhere('category', 'like', 'Level % Income')
                       ->orWhere('category', 'Team Profit Income');
             })
@@ -146,7 +146,7 @@ class BinaryTreeController extends Controller
             $user = $item['user'];
             $userTransactions = $groupedTransactions->get($user->id, collect());
 
-            $roiIncome = $userTransactions->where('category', 'Daily ROI Income')->sum('amount');
+            $roiIncome = $userTransactions->whereIn('category', ['Daily ROI Income', 'Daily Profit Income'])->sum('amount');
             $ibIncome = $userTransactions->where('category', 'like', 'Level % Income')->sum('amount')
                       + $userTransactions->where('category', 'Team Profit Income')->sum('amount');
 

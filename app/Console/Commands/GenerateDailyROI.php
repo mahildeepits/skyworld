@@ -41,7 +41,7 @@ class GenerateDailyROI extends Command
 
             // Check if daily ROI has already been settled for today
             $alreadySettled = UnifiedTransaction::where('user_id', $user->id)
-                ->where('category', 'Daily ROI Income')
+                ->whereIn('category', ['Daily ROI Income', 'Daily Profit Income'])
                 ->where('status', 'Completed')
                 ->whereDate('created_at', now()->toDateString())
                 ->exists();

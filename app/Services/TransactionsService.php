@@ -120,7 +120,7 @@ class TransactionsService{
         $categoryName = '';
         if ($request->income_type === 'roi') {
             $availableBalance = $user->getROIBalance();
-            $categoryName = 'Withdrawal - Progit';
+            $categoryName = 'Withdrawal - Profit';
         } else {
             $availableBalance = $user->getIBBalance();
             $categoryName = 'Withdrawal - IB';
