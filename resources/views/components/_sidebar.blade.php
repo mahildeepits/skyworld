@@ -86,19 +86,20 @@
       </div>
     </li>
 
-    <li class="nav-item {{ request()->routeIs(['member.tree','member.tree.view','my-directs','my-downline']) ? 'active' : '' }}">
+    <li class="nav-item {{ request()->routeIs(['member.tree','member.tree.view','my-directs','my-downline','member.downline.business']) ? 'active' : '' }}">
       <a class="nav-link" data-bs-toggle="collapse" href="#network"
-         aria-expanded="{{ request()->routeIs(['member.tree','member.tree.view','my-directs','my-downline']) ? 'true' : 'false' }}"
+         aria-expanded="{{ request()->routeIs(['member.tree','member.tree.view','my-directs','my-downline','member.downline.business']) ? 'true' : 'false' }}"
          aria-controls="network">
         <i class="icon-people menu-icon"></i>
         <span class="menu-title">Network</span>
         <i class="menu-arrow"></i>
       </a>
-      <div class="collapse {{ request()->routeIs(['member.tree','member.tree.view','my-directs','my-downline']) ? 'show' : '' }}" id="network">
+      <div class="collapse {{ request()->routeIs(['member.tree','member.tree.view','my-directs','my-downline','member.downline.business']) ? 'show' : '' }}" id="network">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"><a class="nav-link {{ request()->routeIs(['member.tree','member.tree.view']) ? 'active' : '' }}" href="{{ route('member.tree', 1) }}">View Tree</a></li>
           <li class="nav-item"><a class="nav-link {{ request()->routeIs('my-directs') ? 'active' : '' }}" href="{{ route('my-directs') }}">My Directs</a></li>
           <li class="nav-item"><a class="nav-link {{ request()->routeIs('my-downline') ? 'active' : '' }}" href="{{ route('my-downline') }}">My Downline</a></li>
+          <li class="nav-item"><a class="nav-link {{ request()->routeIs('member.downline.business') ? 'active' : '' }}" href="{{ route('member.downline.business') }}">Downline Business</a></li>
         </ul>
       </div>
     </li>
@@ -121,15 +122,15 @@
         <span class="menu-title">Withdrawal</span>
       </a>
     </li>
-    @if(!in_array(authUser()->member_id, ['Company','company']))
-    <li class="nav-item {{ Route::is('wallet.transfer') ? 'active' : '' }}">
+    <!-- @if(!in_array(authUser()->member_id, ['Company','company'])) -->
+      
+    <!-- @endif -->
+    <!-- <li class="nav-item {{ Route::is('wallet.transfer') ? 'active' : '' }}">
       <a class="nav-link" href="{{ route('wallet.transfer') }}">
         <i class="icon-shuffle menu-icon"></i>
         <span class="menu-title">Transfer</span>
       </a>
-    </li>
-    @endif
-
+    </li> -->
     <!-- <li class="nav-item {{ Route::is('member.locking') ? 'active' : '' }}">
       <a class="nav-link" href="{{ route('member.locking') }}">
         <i class="icon-lock menu-icon"></i>

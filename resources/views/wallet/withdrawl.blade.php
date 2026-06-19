@@ -26,9 +26,6 @@ $route = 'wallet.withdrawl';
 $method = 'post';
 $user = authUser();
 $userWallets = $user->wallet_addresses ?? [];
-$unsettledROI = $user->getCurrentMonthAccumulatedROI();
-$unsettledLevelROI = $user->getCurrentMonthAccumulatedLevelROI();
-$totalUnsettled = $unsettledROI + $unsettledLevelROI;
 @endphp
 
     <x-page-breadcrumb current-page='Withdrawl' sub-menu='Wallet' />
@@ -73,21 +70,24 @@ $totalUnsettled = $unsettledROI + $unsettledLevelROI;
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group my-2">
+                                        <label class="form-label mb-2 font-weight-bold text-dark">Select Wallet <span class="text-danger">*</span></label>
+                                        <select name="income_type" id="income_type" class="form-control" style="font-weight: 600;">
+                                            <option value="roi">Profit Wallet (Available: {{ number_format($roiBalance ?? 0, 2) }} USDT)</option>
+                                            <option value="ib">IB Wallet (Available: {{ number_format($ibBalance ?? 0, 2) }} USDT)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group my-2">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
                                             <label for="amount" class="font-weight-bold text-dark mb-0">Amount <span class="text-danger">*</span></label>
                                             <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2" id="max-amount-btn" style="font-size: 0.72rem; border-radius: 4px; line-height: 1.5;">Use Max</button>
                                         </div>
-                                        <input type="text" name="amount" class="form-control" id="amount" placeholder="0.00" style="font-weight: 600;">
+                                        <input type="text" name="amount" class="form-control" id="amount" placeholder="10.00" style="font-weight: 600;">
                                         <div class="d-flex justify-content-between mt-1">
                                             <span>
-                                                <small class="text-muted">Available Balance: <b class="text-dark">{{ $availableBalance ?? '0.00' }} USDT </b> </small>
-                                                @if($totalUnsettled > 0)
-                                                    <br/><small class="text-muted text-wrap font-italic" style="font-size: 0.72rem; line-height: 1.1; display: inline-block; max-width: 280px;"><i class="fa fa-info-circle"></i> Excludes ${{ number_format($totalUnsettled, 2) }} unsettled monthly ROI & Level commissions</small>
-                                                @endif
+                                                <small class="text-muted">Available Balance: <b class="text-dark" id="display-available-balance">{{ number_format($roiBalance ?? 0, 2) }} USDT </b> </small>
                                             </span>
-                                            @if($lockedTrading > 0)
-                                                <span><small class="text-danger">Trading Locked: <b>{{ $lockedTrading }} USDT</b></small></span>
-                                            @endif
                                         </div>
                                         <div class="invalid-feedback"></div>
                                     </div>
@@ -182,9 +182,27 @@ $totalUnsettled = $unsettledROI + $unsettledLevelROI;
 
     $(document).on('keyup change', '#amount', updateCalculations);
 
+    let balances = {
+        'roi': parseFloat("{{ $roiBalance ?? 0 }}") || 0,
+        'ib': parseFloat("{{ $ibBalance ?? 0 }}") || 0
+    };
+
+    function updateAvailableBalance() {
+        let type = $('#income_type').val();
+        let available = balances[type];
+        $('#display-available-balance').text(available.toFixed(2) + ' USDT');
+    }
+
+    $(document).on('change', '#income_type', function() {
+        updateAvailableBalance();
+        $('#amount').val('');
+        updateCalculations();
+    });
+
     // Max amount button click handler
     $(document).on('click', '#max-amount-btn', function() {
-        let available = parseFloat("{{ $availableBalance ?? 0 }}") || 0;
+        let type = $('#income_type').val();
+        let available = balances[type];
         let maxLimit = parseFloat("{{ $maxSingleLimit ?? 0 }}") || 0;
         let targetAmount = available;
         if (maxLimit > 0 && targetAmount > maxLimit) {
@@ -224,6 +242,11 @@ $totalUnsettled = $unsettledROI + $unsettledLevelROI;
 
     $('#withdrawal-form').on('submit', function(e){
         e.preventDefault();
+        let amount = parseFloat($('#amount').val()) || 0;
+        if (amount < 10) {
+            alert('The minimum withdrawal amount is 10 USDT.');
+            return false;
+        }
         ajaxFormSubmit($(this)); 
     });
 </script>

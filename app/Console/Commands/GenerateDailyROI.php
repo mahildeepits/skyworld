@@ -21,19 +21,14 @@ class GenerateDailyROI extends Command
      *
      * @var string
      */
-    protected $description = 'Generate monthly ROI settlement for active users at month-end';
+    protected $description = 'Generate daily ROI settlement for active users';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        if (!now()->isLastOfMonth() && !$this->option('force')) {
-            $this->info("Today is not the last day of the month. Settle only at month-end. Use --force to run anyway.");
-            return;
-        }
-
-        $this->info("Starting Monthly ROI Settlement...");
+        $this->info("Starting Daily ROI Settlement...");
         
         $users = User::where('is_paid', 1)->get();
         $count = 0;
@@ -44,21 +39,20 @@ class GenerateDailyROI extends Command
                 continue;
             }
 
-            // Check if monthly ROI has already been settled for this month
+            // Check if daily ROI has already been settled for today
             $alreadySettled = UnifiedTransaction::where('user_id', $user->id)
                 ->where('category', 'Daily ROI Income')
                 ->where('status', 'Completed')
-                ->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
+                ->whereDate('created_at', now()->toDateString())
                 ->exists();
 
             if ($alreadySettled) {
-                $this->info("User ID {$user->id} already settled for this month. Skipping.");
+                $this->info("User ID {$user->id} already settled for today. Skipping.");
                 continue;
             }
 
-            // Calculate the user's monthly settlement amount (pro-rata based on deposit active days)
-            $settlementAmount = $user->getCurrentMonthAccumulatedROI();
+            // Calculate the user's daily settlement amount
+            $settlementAmount = $user->getCurrentMonthDailyROI();
 
             if ($settlementAmount <= 0) {
                 continue;
@@ -70,7 +64,7 @@ class GenerateDailyROI extends Command
             
             // ROI earned THIS MONTH (from database transactions)
             $currentMonthROI = (float) UnifiedTransaction::where('user_id', $user->id)
-                ->where('category', 'Daily ROI Income')
+                ->where('category', 'Daily Profit Income')
                 ->where('status', 'Completed')
                 ->whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
@@ -92,9 +86,9 @@ class GenerateDailyROI extends Command
                     'user_id'          => $user->id,
                     'amount'           => $settlementAmount,
                     'transaction_type' => 'Credit',
-                    'category'         => 'Daily ROI Income',
+                    'category'         => 'Daily Profit Income',
                     'status'           => 'Completed',
-                    'description'      => 'Monthly ROI settlement for ' . now()->format('F Y'),
+                    'description'      => 'Daily Profit settlement for ' . now()->format('Y-m-d'),
                 ]);
 
                 // Distribute Level ROI Income to uplines based on this settled amount
@@ -104,6 +98,6 @@ class GenerateDailyROI extends Command
             }
         }
 
-        $this->info("Processed $count users for monthly ROI settlement.");
+        $this->info("Processed $count users for daily ROI settlement.");
     }
 }

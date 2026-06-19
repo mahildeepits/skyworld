@@ -260,6 +260,7 @@ Route::group(['prefix' => 'member'], function () {
 
         Route::get('directs', [BinaryTreeController::class, 'myDirects'])->name('my-directs');
         Route::get('downline', [BinaryTreeController::class, 'downline'])->name('my-downline');
+        Route::get('downline-business', [BinaryTreeController::class, 'downlineBusiness'])->name('member.downline.business');
 
         //Pin Management
         Route::get('joining-pins', [PinController::class, 'joiningPins'])->name('joining-pins');

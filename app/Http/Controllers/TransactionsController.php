@@ -18,12 +18,8 @@ class TransactionsController extends Controller
             return redirect()->route('edit.wallet.address')->with('error', 'Error|Please add your BEP-20 wallet address first before making a withdrawal.');
         }
 
-        $totalBalance = $user->income_balance;
-        $lockedTrading = $user->getTradingLockedAmount();
-        $availableBalance = round($totalBalance - $lockedTrading - 50, 2);
-        if ($availableBalance < 0) {
-            $availableBalance = 0;
-        }
+        $roiBalance = $user->getROIBalance();
+        $ibBalance = $user->getIBBalance();
 
         if($request->isMethod('post')){
              if(!env('WITHDRAWAL_ACTIVE')){
@@ -42,7 +38,7 @@ class TransactionsController extends Controller
             $maxSingleLimit = ($activeCategory->unlock_balance == 50) ? 200 : $activeCategory->unlock_balance;
         }
 
-        return view('wallet.withdrawl',compact('transaction_fees_percentage', 'availableBalance', 'lockedTrading', 'maxSingleLimit', 'activeCategory'));
+        return view('wallet.withdrawl',compact('transaction_fees_percentage', 'roiBalance', 'ibBalance', 'maxSingleLimit', 'activeCategory'));
     }
     // public function setWalletAddress(Request $request){
     //     $editable = true;

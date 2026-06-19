@@ -729,6 +729,58 @@ class User extends Authenticatable
         return null;
     }
 
+    public function getROIBalance() {
+        $walletCache = $this->walletIncomesByKey('all');
+        $totalROI = $walletCache['roiIncome'] ?? 0;
+        $totalIB = $walletCache['teamCommission'] ?? 0;
+
+        $generalWithdrawals = (float) $this->unifiedTransactions()
+            ->where('category', 'Withdrawal')
+            ->whereIn('status', ['Completed', 'success', 'Pending'])
+            ->sum('amount');
+
+        $roiWithdrawals = (float) $this->unifiedTransactions()
+            ->where('category', 'Withdrawal - Profit')
+            ->whereIn('status', ['Completed', 'success', 'Pending'])
+            ->sum('amount');
+
+        $ratio = 0;
+        if (($totalROI + $totalIB) > 0) {
+            $ratio = $totalROI / ($totalROI + $totalIB);
+        }
+
+        $proportionalDeduction = round($generalWithdrawals * $ratio, 2);
+
+        $balance = $totalROI - $roiWithdrawals - $proportionalDeduction;
+        return max(0, round($balance, 2));
+    }
+
+    public function getIBBalance() {
+        $walletCache = $this->walletIncomesByKey('all');
+        $totalROI = $walletCache['roiIncome'] ?? 0;
+        $totalIB = $walletCache['teamCommission'] ?? 0;
+
+        $generalWithdrawals = (float) $this->unifiedTransactions()
+            ->where('category', 'Withdrawal')
+            ->whereIn('status', ['Completed', 'success', 'Pending'])
+            ->sum('amount');
+
+        $ibWithdrawals = (float) $this->unifiedTransactions()
+            ->where('category', 'Withdrawal - IB')
+            ->whereIn('status', ['Completed', 'success', 'Pending'])
+            ->sum('amount');
+
+        $ratio = 0;
+        if (($totalROI + $totalIB) > 0) {
+            $ratio = $totalIB / ($totalROI + $totalIB);
+        }
+
+        $proportionalDeduction = round($generalWithdrawals * $ratio, 2);
+
+        $balance = $totalIB - $ibWithdrawals - $proportionalDeduction;
+        return max(0, round($balance, 2));
+    }
+
     public function getCurrentMonthDailyROI() {
         $agentCategory = $this->agentCategory();
         if (!$agentCategory) {

@@ -91,8 +91,9 @@ class TransactionsService{
     }
     public function addTransaction($request){
         $validator = Validator::make($request->all(),[
-            'amount'    =>   'required|numeric|min:10',
-            'email_otp' => 'required',
+            'amount'      => 'required|numeric|min:10',
+            'email_otp'   => 'required',
+            'income_type' => 'required|in:roi,ib',
         ]);
         if($validator->fails()){
             return response()->json(['errors' => $validator->errors()], 422);
@@ -113,14 +114,21 @@ class TransactionsService{
         }
         $formattedBankDetails = $userWallets['BEP-20'];
 
-        // 3. Check Balance with Trading Lock & $50 Lock
+        // 3. Check Balance with Trading Lock & $50 Lock (Removed for separate wallets)
         $totalBalance = $user->income_balance;
-        $lockedTrading = $user->getTradingLockedAmount();
-        $availableBalance = round($totalBalance - $lockedTrading, 2);
+        
+        $categoryName = '';
+        if ($request->income_type === 'roi') {
+            $availableBalance = $user->getROIBalance();
+            $categoryName = 'Withdrawal - Progit';
+        } else {
+            $availableBalance = $user->getIBBalance();
+            $categoryName = 'Withdrawal - IB';
+        }
 
-        // if($request->amount > $availableBalance){
-        //     return response()->json(['status' => false,'message' => 'Insufficient Balance. $50 must stay in your wallet and your trading amount ($' . $lockedTrading . ') is also locked.','code' => 400]);
-        // }
+        if($request->amount > $availableBalance){
+            return response()->json(['status' => false,'message' => 'Insufficient Balance in the selected wallet.','code' => 400]);
+        }
 
         // 3.0.1 Check Max Withdrawal Limit (2x Deposit + Referrals)
         $maxLimit = $user->getWithdrawalLimit();
@@ -219,7 +227,7 @@ class TransactionsService{
                 'user_id'          => $user->id,
                 'amount'           => $data['amount'],
                 'transaction_type' => 'Debit',
-                'category'         => 'Withdrawal',
+                'category'         => $categoryName,
                 'related_id'       => $transaction->id,
                 'status'           => 'Pending',
                 'description'      => 'Withdrawal Request initiated for $' . number_format($data['amount'], 2) . ' (TDS: $' . $tds_amount . ')',

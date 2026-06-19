@@ -264,7 +264,7 @@
                         <div class="benefit-icon"><i class="icon-graph"></i></div>
                         <div class="benefit-text">
                             <span>Trade Profit Rate</span>
-                            <strong>{{ $category->massive_order_rate }}% / Day</strong>
+                            <strong>{{ $category->massive_order_rate }}% / Month</strong>
                         </div>
                     </div>
                     <!-- <div class="benefit-item">
@@ -323,7 +323,7 @@
                     <div class="benefit-item">
                         <div class="benefit-icon"><i class="icon-arrow-up-circle"></i></div>
                         <div class="benefit-text">
-                            <span>Monthly Returns</span>
+                            <span>Returns</span>
                             <strong>200%</strong>
                         </div>
                     </div>

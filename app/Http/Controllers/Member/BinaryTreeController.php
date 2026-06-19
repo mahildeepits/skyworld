@@ -89,6 +89,78 @@ class BinaryTreeController extends Controller
         $childs = getSponsoredChilds([$user]);
         return view('binary-tree.downline',compact('childs'));
     }
+
+    public function downlineBusiness(Request $request){
+        $authMemberId = \Auth::guard('member')->user()->member_id;
+        $filter = $request->get('filter', 'till_date');
+
+        $allowedFilters = ['till_date', 'this_month', 'today'];
+        if (!in_array($filter, $allowedFilters)) {
+            $filter = 'till_date';
+        }
+
+        $downline = collect();
+        $levelIds = [$authMemberId];
+        $level = 1;
+
+        while ($level <= 10 && !empty($levelIds)) {
+            $currentLevelUsers = User::with(['latestUserAgentCategory.agentCategory'])
+                ->whereIn('sponsor_id', $levelIds)
+                ->get();
+
+            if ($currentLevelUsers->isEmpty()) {
+                break;
+            }
+
+            foreach ($currentLevelUsers as $user) {
+                $downline->push([
+                    'level' => $level,
+                    'user' => $user,
+                ]);
+            }
+
+            $levelIds = $currentLevelUsers->pluck('member_id')->toArray();
+            $level++;
+        }
+
+        $userIds = $downline->pluck('user.id')->filter()->unique()->toArray();
+
+        $transactionsQuery = \App\Models\UnifiedTransaction::whereIn('user_id', $userIds)
+            ->where(function ($query) {
+                $query->where('category', 'Daily ROI Income')
+                      ->orWhere('category', 'like', 'Level % Income')
+                      ->orWhere('category', 'Team Profit Income');
+            })
+            ->whereIn('status', ['Completed', 'success']);
+
+        if ($filter === 'this_month') {
+            $transactionsQuery->whereMonth('created_at', now()->month)
+                              ->whereYear('created_at', now()->year);
+        } elseif ($filter === 'today') {
+            $transactionsQuery->whereDate('created_at', now()->toDateString());
+        }
+
+        $groupedTransactions = $transactionsQuery->get()->groupBy('user_id');
+
+        $report = $downline->map(function ($item) use ($groupedTransactions) {
+            $user = $item['user'];
+            $userTransactions = $groupedTransactions->get($user->id, collect());
+
+            $roiIncome = $userTransactions->where('category', 'Daily ROI Income')->sum('amount');
+            $ibIncome = $userTransactions->where('category', 'like', 'Level % Income')->sum('amount')
+                      + $userTransactions->where('category', 'Team Profit Income')->sum('amount');
+
+            return (object) [
+                'level' => $item['level'],
+                'user' => $user,
+                'roi_income' => round($roiIncome, 2),
+                'ib_income' => round($ibIncome, 2),
+                'total_income' => round($roiIncome + $ibIncome, 2),
+            ];
+        });
+
+        return view('binary-tree.downline-business', compact('report', 'filter'));
+    }
     public function usersByRole(Request $request){
         $role_id = $request->role_id ?? null;
         $role = Role::find($role_id);
