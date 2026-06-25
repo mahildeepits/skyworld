@@ -244,8 +244,8 @@
   use Carbon\Carbon;
   $user = authUser();
   $walletIncomes = $user->walletIncomesByKey('all');
-  $unsettledROI = $user->getCurrentMonthAccumulatedROI();
-  $unsettledLevelROI = $user->getCurrentMonthAccumulatedLevelROI();
+  $unsettledROI = $user->getUnsettledROI();
+  $unsettledLevelROI = $user->getUnsettledLevelROI();
   $availableBalance = ($user->income_balance ?? 0);
   $totalUnsettled = $unsettledROI + $unsettledLevelROI;
   $depositedAmount = $user->walletIncomesByKey('deposits') ?? 0;
@@ -267,10 +267,10 @@
   
   $totalIncomes = [
       'trade'         => $walletIncomes['tradeIncome'] ?? 0,
-      'team'          => ($walletIncomes['teamCommission'] ?? 0) + $unsettledLevelROI,
+      'team'          => ($walletIncomes['teamCommission'] ?? 0),
       'direct'        => $walletIncomes['directIncome'] ?? 0,
       'bonus'         => $walletIncomes['bonusIncome'] ?? 0,
-      'roi'           => ($walletIncomes['roiIncome'] ?? 0) + $unsettledROI,
+      'roi'           => ($walletIncomes['roiIncome'] ?? 0),
   ];
 
   // Team Stats

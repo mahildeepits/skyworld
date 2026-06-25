@@ -105,11 +105,11 @@
 
 @section('content')
 @php
-    $unsettledROI = $user->getCurrentMonthAccumulatedROI();
-    $unsettledLevelROI = $user->getCurrentMonthAccumulatedLevelROI();
+    $unsettledROI = $user->getUnsettledROI();
+    $unsettledLevelROI = $user->getUnsettledLevelROI();
     $totalUnsettled = $unsettledROI + $unsettledLevelROI;
     $availableBalance = ($user->income_balance ?? 0);
-    $myIncome = ($user->walletIncomesByKey('myIncome') ?? 0) + $totalUnsettled;
+    $myIncome = ($user->walletIncomesByKey('myIncome') ?? 0);
 @endphp
 <x-page-breadcrumb current-page='Wallet' sub-menu='Transactions' />
 

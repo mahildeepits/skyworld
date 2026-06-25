@@ -928,4 +928,30 @@ class User extends Authenticatable
 
         return round($totalAccumulatedLevelROI, 2);
     }
+
+    public function getUnsettledROI() {
+        $accumulated = $this->getCurrentMonthAccumulatedROI();
+        $paid = (float) $this->unifiedTransactions()
+            ->whereIn('category', ['Daily ROI Income', 'Daily Profit Income'])
+            ->whereIn('status', ['Completed', 'success'])
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('amount');
+        return max(0, round($accumulated - $paid, 2));
+    }
+
+    public function getUnsettledLevelROI() {
+        $accumulated = $this->getCurrentMonthAccumulatedLevelROI();
+        $paid = (float) $this->unifiedTransactions()
+            ->where(function($q) {
+                $q->where('category', 'like', 'Level %')
+                  ->orWhere('category', 'Team Profit Income');
+            })
+            ->whereIn('status', ['Completed', 'success'])
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('amount');
+        return max(0, round($accumulated - $paid, 2));
+    }
 }
+
