@@ -42,6 +42,7 @@ use App\Http\Controllers\Member\FeaturesController;
 use App\Http\Controllers\Admin\MemberFeaturesController;
 use App\Http\Controllers\DailyTradeController;
 use App\Http\Controllers\Admin\RegistrationRequestController;
+use App\Http\Controllers\Admin\IncomeFixController;
 
 /*
 |--------------------------------------------------------------------------
@@ -197,6 +198,7 @@ Route::group(['prefix' => 'admin'], function () {
             Artisan::call('settle:bonuses');
             return redirect()->back()->with('success', 'Success|Bonuses Settled Successfully');
         })->name('settle.bonuses');
+        Route::get('/generate-skipped-incomes', [IncomeFixController::class, 'generateSkippedIncomes'])->name('admin.generate.skipped-incomes');
         // features controll
         Route::get('/contacts/list', [MemberFeaturesController::class, 'contactsIndex'])->name('contacts.list');
         Route::get('/news/events', [MemberFeaturesController::class, 'newAndEventsIndex'])->name('news.events');
