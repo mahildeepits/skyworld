@@ -20,7 +20,7 @@ class IncomeFixController extends Controller
 
         // Get parameters with defaults
         $startDateStr = $request->query('start_date', '2026-07-02');
-        $endDateStr = $request->query('end_date', '2026-07-03');
+        $endDateStr = $request->query('end_date', '2026-07-04');
         $deleteDateStr = null;
 
         try {
