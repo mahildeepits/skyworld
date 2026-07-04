@@ -19,9 +19,9 @@ class IncomeFixController extends Controller
         set_time_limit(0);
 
         // Get parameters with defaults
-        $startDateStr = $request->query('start_date', '2026-06-26');
-        $endDateStr = $request->query('end_date', '2026-07-01');
-        $deleteDateStr = $request->query('delete_date', '2026-07-01');
+        $startDateStr = $request->query('start_date', '2026-07-02');
+        $endDateStr = $request->query('end_date', '2026-07-03');
+        $deleteDateStr = null;
 
         try {
             $start = Carbon::parse($startDateStr);
