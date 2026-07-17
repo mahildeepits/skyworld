@@ -259,7 +259,7 @@
   // Incomes Mapping for the detailed table (Using UnifiedTransaction now)
   $dailyIncomes = [
       'trade'         => $user->today_trade_income,
-      'team'          => $user->today_team_commission + $user->getCurrentMonthDailyLevelROI(),
+      'team'          => $user->today_team_commission,
       'direct'        => $user->today_direct_income,
       'bonus'         => $user->today_bonus_income,
       'roi'           => $user->getCurrentMonthDailyROI(),
